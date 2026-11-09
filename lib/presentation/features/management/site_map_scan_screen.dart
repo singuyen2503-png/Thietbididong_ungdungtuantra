@@ -6,8 +6,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import '../../../core/utils/geo_utils.dart';
 import '../../../core/utils/lat_lng.dart';
+import '../../../domain/entities/models.dart';
+import '../../state/manager_state.dart';
 import '../../state/workforce_state.dart';
 import '../../widgets/tactical_map.dart';
+import '../../../core/theme/app_theme.dart';
 
 class SiteMapScanScreen extends ConsumerStatefulWidget {
   const SiteMapScanScreen({super.key});
@@ -17,7 +20,7 @@ class SiteMapScanScreen extends ConsumerStatefulWidget {
 }
 
 class _SiteMapScanScreenState extends ConsumerState<SiteMapScanScreen> {
-  static const _accent = Color(0xFF00FF9D);
+  static const _accent = AppColors.primary;
   static const _useRealGps = bool.fromEnvironment('USE_REAL_GPS');
   static const _stepMeters = 4.0;
 
@@ -151,12 +154,22 @@ class _SiteMapScanScreenState extends ConsumerState<SiteMapScanScreen> {
   @override
   Widget build(BuildContext context) {
     final tracks = ref.watch(siteTrackPointsProvider);
+    final checkpoints = {
+      for (final r in ref.watch(routeConfigsProvider))
+        for (final c in r.checkpoints)
+          c.id: Checkpoint(
+              id: c.id,
+              name: c.name,
+              expectedQrCode: c.expectedQrCode,
+              location: c.location,
+              radiusMeters: c.radiusMeters)
+    };
     final firstTime = tracks.isEmpty && !_recording;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0E17),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF151E2E),
+        backgroundColor: AppColors.surface,
         iconTheme: const IconThemeData(color: _accent),
         title: const Text('QUÉT BẢN ĐỒ KHU VỰC',
             style: TextStyle(color: _accent, fontWeight: FontWeight.bold)),
@@ -173,7 +186,7 @@ class _SiteMapScanScreenState extends ConsumerState<SiteMapScanScreen> {
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(12),
-            color: const Color(0xFF151E2E),
+            color: AppColors.surface,
             child: Text(
               firstTime
                   ? 'Khu vực chưa có bản đồ. Bấm "BẮT ĐẦU QUÉT" rồi đi một vòng '
@@ -189,6 +202,7 @@ class _SiteMapScanScreenState extends ConsumerState<SiteMapScanScreen> {
           Expanded(
             child: TacticalMap(
               siteTracks: [...tracks, if (_track.length > 1) _track],
+              checkpoints: checkpoints.values.toList(),
               currentLocation: _walker,
               onTap: _recording && !_useRealGps
                   ? (point) => setState(() => _target = point)
@@ -197,7 +211,7 @@ class _SiteMapScanScreenState extends ConsumerState<SiteMapScanScreen> {
           ),
           Container(
             padding: const EdgeInsets.all(16),
-            color: const Color(0xFF151E2E),
+            color: AppColors.surface,
             child: Column(
               children: [
                 if (_recording)

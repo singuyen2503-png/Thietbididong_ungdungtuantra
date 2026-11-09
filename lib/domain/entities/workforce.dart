@@ -1,3 +1,5 @@
+import '../../core/utils/date_utils.dart';
+
 enum ShiftType { morning, afternoon, night }
 
 extension ShiftTypeInfo on ShiftType {
@@ -25,7 +27,6 @@ extension ShiftTypeInfo on ShiftType {
 
   String get timeRange {
     final end = (startHour + 8) % 24;
-    String two(int h) => h.toString().padLeft(2, '0');
     return '${two(startHour)}:00 - ${two(end)}:00';
   }
 
@@ -40,12 +41,16 @@ class RosterEntry {
   final String personnelId;
   final DateTime date;
   final ShiftType shift;
+  final String? routeId;
+  final List<String> equipmentIds;
 
   RosterEntry(
       {required this.id,
       required this.personnelId,
       required this.date,
-      required this.shift});
+      required this.shift,
+      this.routeId,
+      this.equipmentIds = const []});
 
   DateTime get start => shift.startOn(date);
   DateTime get end => shift.endOn(date);

@@ -3,9 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:demo_app/core/utils/date_utils.dart';
 import 'package:demo_app/domain/entities/workforce.dart';
-import 'package:demo_app/presentation/features/attendance/attendance_card.dart';
 import 'package:demo_app/presentation/features/attendance/attendance_overview_screen.dart';
 import 'package:demo_app/presentation/features/dashboard/guard_dashboard_screen.dart';
+import 'package:demo_app/presentation/features/dashboard/manager_dashboard_screen.dart';
+import 'package:demo_app/presentation/features/dashboard/shift_card.dart';
 import 'package:demo_app/presentation/features/leave/leave_approval_screen.dart';
 import 'package:demo_app/presentation/features/leave/leave_request_screen.dart';
 import 'package:demo_app/presentation/features/management/personnel_screen.dart';
@@ -54,7 +55,7 @@ void main() {
   });
 
   testWidgets('Bảo vệ chấm công vào ca và kết thúc ca', (tester) async {
-    final c = await pump(tester, const AttendanceCard(),
+    final c = await pump(tester, const ShiftCard(),
         guard: 'p1', now: morning.add(const Duration(minutes: 20)));
     expect(find.text('Chưa vào ca'), findsOneWidget);
     await tester.tap(find.text('VÀO CA'));
@@ -64,6 +65,60 @@ void main() {
     await tester.pump();
     expect(find.textContaining('Đã xong ca'), findsOneWidget);
     expect(c.read(attendanceProvider).first.isComplete, isTrue);
+  });
+
+  testWidgets('Vào ca tạo ca tuần tra theo lộ trình đã phân', (tester) async {
+    final monday = startOfWeek(today).add(const Duration(days: 7));
+    final c = await pump(tester, const ShiftCard(),
+        guard: 'p2',
+        now: ShiftType.morning.startOn(monday).add(const Duration(minutes: 5)));
+    expect(
+        c.read(rosterProvider.notifier).assign('p2', monday, ShiftType.morning,
+            personnel: c.read(personnelProvider),
+            leaves: c.read(leavesProvider),
+            routeId: 'r1',
+            equipmentIds: ['e3']),
+        isNull);
+    await tester.pump();
+    expect(find.text('Tuyến: Tuyến tuần tra mẫu'), findsOneWidget);
+    expect(find.text('BẮT ĐẦU TUẦN TRA'), findsNothing);
+
+    await tester.tap(find.text('VÀO CA'));
+    await tester.pump();
+    final schedule = c.read(schedulesProvider).last;
+    expect(schedule.guardId, 'p2');
+    expect(schedule.startTime, ShiftType.morning.startOn(monday));
+    expect(schedule.checkpoints.length, 3);
+    expect(c.read(equipmentProvider).firstWhere((e) => e.id == 'e3').status,
+        EquipmentStatus.inUse);
+    expect(find.text('BẮT ĐẦU TUẦN TRA'), findsOneWidget);
+    expect(find.text('Đã quét 0/3 điểm'), findsOneWidget);
+
+    await tester.tap(find.text('KẾT THÚC CA'));
+    await tester.pump();
+    expect(c.read(equipmentProvider).firstWhere((e) => e.id == 'e3').status,
+        EquipmentStatus.available);
+  });
+
+  testWidgets('Trung tâm chỉ huy gom chức năng theo 4 tab', (tester) async {
+    await pump(tester, const ManagerDashboardScreen());
+    expect(find.text('TRUNG TÂM CHỈ HUY'), findsOneWidget);
+    expect(find.text('CA HÔM NAY'), findsOneWidget);
+    expect(find.text('Giám sát tuần tra'), findsOneWidget);
+
+    await tester.tap(find.text('Lịch trực'));
+    await tester.pumpAndSettle();
+    expect(find.text('LỊCH TRỰC TUẦN'), findsOneWidget);
+
+    await tester.tap(find.text('Nhân sự'));
+    await tester.pumpAndSettle();
+    expect(find.text('Chấm công'), findsOneWidget);
+    expect(find.text('1 đơn đang chờ duyệt'), findsOneWidget);
+
+    await tester.tap(find.text('Thiết lập'));
+    await tester.pumpAndSettle();
+    expect(find.text('Lộ trình & mã QR'), findsOneWidget);
+    expect(find.text('1 lộ trình • 3 điểm tuần tra'), findsOneWidget);
   });
 
   testWidgets('Bảng chấm công tổng hiển thị từng nhân viên', (tester) async {

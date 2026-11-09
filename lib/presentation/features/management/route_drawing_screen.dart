@@ -6,6 +6,7 @@ import '../../state/workforce_state.dart';
 import '../../../domain/entities/models.dart';
 import '../../../core/utils/lat_lng.dart';
 import '../../widgets/tactical_map.dart';
+import '../../../core/theme/app_theme.dart';
 
 class RouteDrawingScreen extends ConsumerStatefulWidget {
   const RouteDrawingScreen({super.key});
@@ -117,12 +118,12 @@ class _RouteDrawingScreenState extends ConsumerState<RouteDrawingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0E17),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('CẤU HÌNH LỘ TRÌNH',
             style: TextStyle(
                 fontFamily: 'Roboto',
-                color: Color(0xFF00FF9D),
+                color: AppColors.primary,
                 fontWeight: FontWeight.bold)),
         backgroundColor: Colors.transparent,
       ),
@@ -139,12 +140,12 @@ class _RouteDrawingScreenState extends ConsumerState<RouteDrawingScreen> {
                         decoration: const InputDecoration(
                             labelText: 'Tên Lộ Trình',
                             filled: true,
-                            fillColor: Color(0xFF151E2E)))),
+                            fillColor: AppColors.surface))),
                 const SizedBox(width: 16),
                 ElevatedButton(
                     onPressed: _saveRoute,
                     style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF00FF9D)),
+                        backgroundColor: AppColors.primary),
                     child: const Text('LƯU LẠI',
                         style: TextStyle(
                             color: Colors.black, fontWeight: FontWeight.bold)))
@@ -187,7 +188,7 @@ class _RouteDrawingScreenState extends ConsumerState<RouteDrawingScreen> {
           ),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            color: const Color(0xFF151E2E),
+            color: AppColors.surface,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

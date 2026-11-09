@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../domain/entities/models.dart';
+import '../../../core/theme/app_theme.dart';
 
 class PersonnelDetailScreen extends StatelessWidget {
   final Personnel personnel;
@@ -8,9 +9,9 @@ class PersonnelDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0E17),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF151E2E),
+        backgroundColor: AppColors.surface,
         title: const Text('HỒ SƠ NHÂN SỰ',
             style: TextStyle(color: Colors.blueAccent)),
         iconTheme: const IconThemeData(color: Colors.blueAccent),
@@ -35,7 +36,7 @@ class PersonnelDetailScreen extends StatelessWidget {
                 style: const TextStyle(fontSize: 18, color: Colors.grey)),
             const SizedBox(height: 32),
             Card(
-              color: const Color(0xFF151E2E),
+              color: AppColors.surface,
               elevation: 4,
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -69,7 +70,7 @@ class PersonnelDetailScreen extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                  color: const Color(0xFF151E2E),
+                  color: AppColors.surface,
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: Colors.white12)),
               child: Text(

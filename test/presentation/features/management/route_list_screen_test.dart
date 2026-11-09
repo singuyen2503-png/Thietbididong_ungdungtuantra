@@ -12,9 +12,9 @@ void main() {
 
     await tester.pumpWidget(
         const ProviderScope(child: MaterialApp(home: RouteListScreen())));
-    expect(find.text('Tuyến Trung tâm 59'), findsOneWidget);
+    expect(find.text('Tuyến tuần tra mẫu'), findsOneWidget);
 
-    await tester.tap(find.text('Tuyến Trung tâm 59'));
+    await tester.tap(find.text('Tuyến tuần tra mẫu'));
     await tester.pumpAndSettle();
 
     expect(find.byType(QrImageView), findsNWidgets(3));
@@ -29,13 +29,13 @@ void main() {
 
     await tester.pumpWidget(
         const ProviderScope(child: MaterialApp(home: RouteListScreen())));
-    await tester.drag(find.text('Tuyến Trung tâm 59'), const Offset(-500, 0));
+    await tester.drag(find.text('Tuyến tuần tra mẫu'), const Offset(-500, 0));
     await tester.pumpAndSettle();
 
     expect(
         find.text(
             'Lộ trình đang được dùng trong lịch tuần tra, không thể xóa!'),
         findsOneWidget);
-    expect(find.text('Tuyến Trung tâm 59'), findsOneWidget);
+    expect(find.text('Tuyến tuần tra mẫu'), findsOneWidget);
   });
 }

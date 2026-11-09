@@ -27,7 +27,9 @@ void main() {
 
   testWidgets('Không có ca nào đang đi tuần', (tester) async {
     final container = await open(tester);
-    container.read(schedulesProvider.notifier).deleteSchedule('s2');
+    container
+        .read(schedulesProvider.notifier)
+        .deleteSchedule('r${DateTime.now().weekday - 1}-p3');
     await tester.pump();
     expect(find.text('Hiện không có ca tuần tra nào đang diễn ra.'),
         findsOneWidget);

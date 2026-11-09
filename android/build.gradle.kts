@@ -1,3 +1,13 @@
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath("com.google.gms:google-services:4.4.2")
+    }
+}
+
 allprojects {
     repositories {
         google()
@@ -18,8 +28,6 @@ subprojects {
 subprojects {
     project.evaluationDependsOn(":app")
     
-    // Disable unit test config generation for Flutter plugins
-    // to bypass the "different roots" path error on Windows.
     tasks.withType<Task>().configureEach {
         if (name.contains("UnitTest")) {
             enabled = false

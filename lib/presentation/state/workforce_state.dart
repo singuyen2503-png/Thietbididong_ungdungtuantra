@@ -1,4 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/theme/app_theme.dart';
 import '../../core/utils/date_utils.dart';
 import '../../core/utils/lat_lng.dart';
 import '../../data/datasources/local_store.dart';
@@ -28,20 +30,25 @@ class RosterNotifier extends PersistedListNotifier<RosterEntry> {
           id: 'r$i-p1',
           personnelId: 'p1',
           date: day,
-          shift: ShiftType.morning));
+          shift: ShiftType.morning,
+          routeId: 'r1',
+          equipmentIds: const ['e1']));
       if (i < 6) {
         entries.add(RosterEntry(
             id: 'r$i-p3',
             personnelId: 'p3',
             date: day,
-            shift: ShiftType.afternoon));
+            shift: ShiftType.afternoon,
+            routeId: 'r1',
+            equipmentIds: const ['e2']));
       }
       if (i < 5) {
         entries.add(RosterEntry(
             id: 'r$i-p2',
             personnelId: 'p2',
             date: day,
-            shift: ShiftType.night));
+            shift: ShiftType.night,
+            routeId: 'r1'));
       }
     }
     return entries;
@@ -49,7 +56,9 @@ class RosterNotifier extends PersistedListNotifier<RosterEntry> {
 
   String? assign(String personnelId, DateTime day, ShiftType shift,
       {required List<Personnel> personnel,
-      required List<LeaveRequest> leaves}) {
+      required List<LeaveRequest> leaves,
+      String? routeId,
+      List<String> equipmentIds = const []}) {
     final date = dateOnly(day);
     final person = personnel.where((p) => p.id == personnelId).firstOrNull;
     if (person == null || !person.isActive) {
@@ -71,7 +80,12 @@ class RosterNotifier extends PersistedListNotifier<RosterEntry> {
     state = [
       ...state,
       RosterEntry(
-          id: _newId(), personnelId: personnelId, date: date, shift: shift)
+          id: _newId(),
+          personnelId: personnelId,
+          date: date,
+          shift: shift,
+          routeId: routeId,
+          equipmentIds: equipmentIds)
     ];
     return null;
   }
@@ -102,7 +116,10 @@ class RosterNotifier extends PersistedListNotifier<RosterEntry> {
     for (final e in source.toList()) {
       final error = assign(
           e.personnelId, e.date.add(Duration(days: offset)), e.shift,
-          personnel: personnel, leaves: leaves);
+          personnel: personnel,
+          leaves: leaves,
+          routeId: e.routeId,
+          equipmentIds: e.equipmentIds);
       if (error == null) added++;
     }
     return added;
@@ -344,4 +361,188 @@ void raiseFireAlarm(WidgetRef ref, String location, String reporter) {
       createdAt: DateTime.now(),
       severity: IncidentSeverity.critical,
       isFireAlarm: true));
+}
+
+class CurrentShift {
+  final RosterEntry? entry;
+  final AttendanceRecord? record;
+  final Schedule? schedule;
+  final RouteConfig? route;
+  final DateTime now;
+
+  const CurrentShift(
+      {this.entry, this.record, this.schedule, this.route, required this.now});
+
+  bool get canCheckIn =>
+      entry != null && record == null && entry!.end.isAfter(now);
+  bool get canCheckOut => record != null && !record!.isComplete;
+  bool get onDuty =>
+      canCheckOut || schedule?.status == ScheduleStatus.inProgress;
+  String? get routeName => schedule?.routeName ?? route?.name;
+}
+
+final currentShiftProvider = Provider<CurrentShift>((ref) {
+  final now = ref.watch(clockProvider)();
+  final id = ref.watch(currentGuardIdProvider);
+  if (id == null) return CurrentShift(now: now);
+  final today = dateOnly(now);
+  final yesterday = today.subtract(const Duration(days: 1));
+  final candidates = ref
+      .watch(rosterProvider)
+      .where((e) =>
+          e.personnelId == id &&
+          (sameDay(e.date, today) ||
+              (sameDay(e.date, yesterday) && e.end.isAfter(now))))
+      .toList()
+    ..sort((a, b) => a.start.compareTo(b.start));
+  final entry = candidates.where((e) => e.end.isAfter(now)).firstOrNull ??
+      candidates.lastOrNull;
+  if (entry == null) return CurrentShift(now: now);
+  final routes = ref.watch(routeConfigsProvider);
+  return CurrentShift(
+    now: now,
+    entry: entry,
+    record: ref
+        .watch(attendanceProvider)
+        .where((a) =>
+            a.personnelId == id &&
+            sameDay(a.date, entry.date) &&
+            a.shift == entry.shift)
+        .firstOrNull,
+    schedule:
+        ref.watch(schedulesProvider).where((s) => s.id == entry.id).firstOrNull,
+    route: routes.where((r) => r.id == entry.routeId).firstOrNull ??
+        routes.firstOrNull,
+  );
+});
+
+Schedule scheduleFromRoster(
+        RosterEntry entry, Personnel guard, RouteConfig route) =>
+    Schedule(
+        id: entry.id,
+        routeId: route.id,
+        routeName: route.name,
+        guardId: guard.id,
+        guardName: guard.name,
+        startTime: entry.start,
+        endTime: entry.end,
+        checkpoints: [
+          for (final c in route.checkpoints)
+            Checkpoint(
+                id: c.id,
+                name: c.name,
+                expectedQrCode: c.expectedQrCode,
+                location: c.location,
+                radiusMeters: c.radiusMeters),
+        ],
+        plannedPath: route.plannedPath,
+        equipmentIds: entry.equipmentIds,
+        status: ScheduleStatus.pending);
+
+String? startShift(WidgetRef ref) {
+  final shift = ref.read(currentShiftProvider);
+  final me = ref.read(currentGuardProvider);
+  final entry = shift.entry;
+  if (me == null || entry == null) return 'Hôm nay bạn không có ca trực!';
+  final error = ref
+      .read(attendanceProvider.notifier)
+      .checkIn(me.id, entry, ref.read(clockProvider)());
+  if (error != null) return error;
+  if (shift.schedule == null && shift.route != null) {
+    ref
+        .read(schedulesProvider.notifier)
+        .addSchedule(scheduleFromRoster(entry, me, shift.route!));
+    ref
+        .read(equipmentProvider.notifier)
+        .markEquipmentsAsInUse(entry.equipmentIds);
+  }
+  return null;
+}
+
+void endShift(WidgetRef ref) {
+  final shift = ref.read(currentShiftProvider);
+  final record = shift.record;
+  if (record == null) return;
+  ref
+      .read(attendanceProvider.notifier)
+      .checkOut(record.id, ref.read(clockProvider)());
+  final schedule = shift.schedule;
+  if (schedule != null && schedule.status != ScheduleStatus.completed) {
+    ref
+        .read(equipmentProvider.notifier)
+        .releaseEquipments(schedule.equipmentIds);
+  }
+}
+
+String? removeRosterEntry(WidgetRef ref, RosterEntry entry) {
+  final schedule =
+      ref.read(schedulesProvider).where((s) => s.id == entry.id).firstOrNull;
+  if (schedule?.status == ScheduleStatus.inProgress) {
+    return 'Ca đang tuần tra, không thể gỡ!';
+  }
+  if (schedule != null) {
+    if (schedule.status == ScheduleStatus.pending) {
+      ref
+          .read(equipmentProvider.notifier)
+          .releaseEquipments(schedule.equipmentIds);
+    }
+    ref.read(schedulesProvider.notifier).deleteSchedule(schedule.id);
+  }
+  ref.read(rosterProvider.notifier).remove(entry.id);
+  return null;
+}
+
+enum ShiftState { planned, checkedIn, patrolling, done, absent }
+
+extension ShiftStateInfo on ShiftState {
+  String get label {
+    switch (this) {
+      case ShiftState.planned:
+        return 'Chưa vào ca';
+      case ShiftState.checkedIn:
+        return 'Đã vào ca';
+      case ShiftState.patrolling:
+        return 'Đang tuần tra';
+      case ShiftState.done:
+        return 'Hoàn thành';
+      case ShiftState.absent:
+        return 'Vắng';
+    }
+  }
+}
+
+ShiftState shiftStateOf(RosterEntry entry, List<AttendanceRecord> attendance,
+    List<Schedule> schedules, DateTime now) {
+  final schedule = schedules.where((s) => s.id == entry.id).firstOrNull;
+  final record = attendance
+      .where((a) =>
+          a.personnelId == entry.personnelId &&
+          sameDay(a.date, entry.date) &&
+          a.shift == entry.shift)
+      .firstOrNull;
+  if (schedule?.status == ScheduleStatus.completed ||
+      (record?.isComplete ?? false)) {
+    return ShiftState.done;
+  }
+  if (schedule?.status == ScheduleStatus.inProgress) {
+    return ShiftState.patrolling;
+  }
+  if (record != null) return ShiftState.checkedIn;
+  if (entry.end.isBefore(now)) return ShiftState.absent;
+  return ShiftState.planned;
+}
+
+Color shiftStateColor(ShiftState state) {
+  switch (state) {
+    case ShiftState.planned:
+      return AppColors.textMuted;
+    case ShiftState.checkedIn:
+      return AppColors.warning;
+    case ShiftState.patrolling:
+      return AppColors.primary;
+    case ShiftState.done:
+      return AppColors.info;
+    case ShiftState.absent:
+      return AppColors.danger;
+  }
 }

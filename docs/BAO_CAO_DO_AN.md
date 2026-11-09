@@ -36,11 +36,12 @@
 | Local Storage | shared_preferences | Lưu sự cố, lịch, lộ trình, nhân sự, thiết bị dạng JSON – dữ liệu còn nguyên khi mở lại app |
 | Camera / Ảnh | image_picker | Chụp ảnh hoặc chọn ảnh hiện trường đính kèm báo cáo sự cố |
 | Ghi âm / Phát âm thanh | record, audioplayers, path_provider | Ghi âm hiện trường và phát lại; phát còi báo cháy lặp liên tục |
-| Mã QR | qr_flutter | Sinh mã QR cho từng điểm tuần tra để in và dán tại hiện trường |
-| Bản đồ | flutter_map, latlong2 + nền bản đồ OpenStreetMap | Bản đồ thật (đường phố, tòa nhà) để vẽ lộ trình, chấm điểm, quét bản đồ khu vực, giám sát; không cần API key |
+| Mã QR | qr_flutter, share_plus | Sinh mã QR cho từng địa điểm tuần tra; xuất ảnh mã QR để gửi qua Zalo, Drive, email hoặc máy in |
+| Bản đồ | flutter_map, latlong2 | Vẽ điểm tuần tra, lộ trình, đường đã đi và đường đã quét theo tọa độ GPS; không dùng bản đồ trực tuyến, không cần Internet hay API key |
+| Giao diện | Material 3, bộ màu dùng chung (`AppTheme`), NavigationBar | Giao diện tối thống nhất; Chỉ huy dùng thanh điều hướng 4 tab gom chức năng theo nhóm |
 | Radar | CustomPainter | Radar quét vị trí và tiến độ khi tuần tra |
 | Cơ sở dữ liệu / Backend | *Chưa có máy chủ* – lưu cục bộ trên thiết bị (SharedPreferences) | Dữ liệu chỉ nằm trên một máy, chưa đồng bộ giữa nhiều thiết bị |
-| Kiểm thử | flutter_test | 52 Unit / Widget test, `flutter analyze` không còn lỗi |
+| Kiểm thử | flutter_test | 63 Unit / Widget test, `flutter analyze` không còn lỗi |
 
 #### b. Tổng hợp các chức năng (theo phân quyền)
 
@@ -51,7 +52,7 @@
 | 3 | Chung – Tài khoản | Đăng nhập sinh trắc học (vân tay / khuôn mặt) cho bảo vệ đã đăng nhập PIN trên máy | Hoàn thành (chỉ trên thiết bị thật có cảm biến) |
 | 4 | Chung – Tài khoản | Đăng xuất | Hoàn thành |
 | 5 | Chung – Tài khoản | Mật khẩu / tài khoản xác thực trên máy chủ | Chưa xây dựng – PIN lưu cục bộ, chưa mã hóa |
-| 6 | Bảo vệ – Ca trực | Xem ca trực hiện tại (giờ, tuyến, tiến độ, trạng thái) | Hoàn thành |
+| 6 | Bảo vệ – Ca trực | Thẻ "Ca trực hôm nay" gom chấm công và tuần tra: vào ca, bắt đầu / tiếp tục tuần tra, kết thúc ca, tuyến, tiến độ, trạng thái | Hoàn thành |
 | 7 | Bảo vệ – Ca trực | Xem chi tiết ca: bản đồ lộ trình, đường đã đi, danh sách điểm, thiết bị được cấp | Hoàn thành |
 | 8 | Bảo vệ – Tuần tra | Theo dõi vị trí GPS & radar tiến độ | Hoàn thành (mặc định dùng GPS giả lập để demo) |
 | 9 | Bảo vệ – Tuần tra | Geofencing: chỉ cho quét khi ở trong bán kính điểm (15 m) | Hoàn thành |
@@ -63,27 +64,29 @@
 | 15 | Bảo vệ – Sự cố | Ghi âm hiện trường kèm báo cáo, nghe lại / xóa / ghi lại | Hoàn thành (trên điện thoại; bản Web ẩn chức năng) |
 | 16 | Bảo vệ – Sự cố | Theo dõi sự cố của mình / được điều động chi viện, báo cáo xử lý | Hoàn thành |
 | 17 | Bảo vệ – Báo cháy | Nút BÁO CHÁY: chọn vị trí, xác nhận, phát còi và cảnh báo nhấp nháy tới Chỉ huy và các bảo vệ | Hoàn thành |
-| 18 | Bảo vệ – Chấm công | Vào ca / kết thúc ca theo lịch trực; tự tính đi trễ (quá 10 phút) và số giờ làm | Hoàn thành |
+| 18 | Bảo vệ – Chấm công | Vào ca / kết thúc ca theo lịch trực; vào ca tự tạo ca tuần tra và cấp thiết bị; tự tính đi trễ (quá 10 phút) và số giờ làm | Hoàn thành |
 | 19 | Bảo vệ – Chấm công | Xem công cá nhân theo tháng (số ca, giờ, đi trễ, ngày phép, ca vắng) và lịch trực tuần của mình | Hoàn thành |
 | 20 | Bảo vệ – Nghỉ phép | Gửi đơn xin nghỉ (từ ngày – đến ngày, lý do), theo dõi trạng thái Chờ duyệt / Đã duyệt / Từ chối | Hoàn thành |
-| 21 | Chỉ huy – Tổng quan | Dashboard thống kê: tuyến đang trực, nhân sự đi tuần, sự cố chờ xử lý (tính từ dữ liệu thật) | Hoàn thành |
+| 21 | Chỉ huy – Tổng quan | Thanh điều hướng 4 tab (Trực ban / Lịch trực / Nhân sự / Thiết lập); trang Trực ban: số ca hôm nay, số người đang trực, sự cố mở, trạng thái từng ca trong ngày | Hoàn thành |
 | 22 | Chỉ huy – Giám sát | Giám sát các ca đang đi tuần: bản đồ đường đã đi, tiến độ, lần quét cuối, điểm kế tiếp | Hoàn thành (dữ liệu trên cùng thiết bị, chưa theo dõi thời gian thực từ máy khác) |
 | 23 | Chỉ huy – Sự cố | Danh sách & chi tiết sự cố (ảnh, ghi âm), điều động chi viện, đóng sự cố kèm ghi chú | Hoàn thành |
 | 24 | Chỉ huy – Lộ trình | Vẽ lộ trình, chấm điểm, hoàn tác, đổi tên điểm; danh sách & xóa lộ trình | Hoàn thành |
 | 25 | Chỉ huy – Lộ trình | Sinh mã QR cho từng điểm tuần tra để in và dán | Hoàn thành |
-| 26 | Chỉ huy – Bản đồ | Quét bản đồ khu vực lần đầu bằng cách đi một vòng (giả lập bước đi hoặc GPS thật); đường đã quét làm bản đồ nền cho mọi màn hình bản đồ | Hoàn thành |
-| 27 | Chỉ huy – Lịch tuần tra | Tạo lịch: chọn lộ trình, giờ ca, bảo vệ, cấp phát thiết bị đang rảnh | Hoàn thành |
-| 28 | Chỉ huy – Lịch tuần tra | Theo dõi tiến độ quét từng ca; hủy lịch (thu hồi thiết bị) | Hoàn thành |
-| 29 | Chỉ huy – Lịch trực | Phân ca trực (Sáng / Chiều / Tối), lên lịch trực theo tuần, sao chép lịch tuần trước; chặn trùng ca và người đang nghỉ phép | Hoàn thành |
-| 30 | Chỉ huy – Chấm công | Bảng công tổng theo tháng và chi tiết công từng nhân viên | Hoàn thành |
-| 31 | Chỉ huy – Nghỉ phép | Duyệt / từ chối đơn nghỉ kèm ghi chú; tự gỡ ca trực trong những ngày được nghỉ | Hoàn thành |
-| 32 | Chỉ huy – Nhân sự | Xem danh sách & hồ sơ chi tiết | Hoàn thành |
-| 33 | Chỉ huy – Nhân sự | Thêm / sửa (ràng buộc SĐT, tuổi, mã NV và PIN không trùng) / vuốt để xóa | Hoàn thành |
-| 34 | Chỉ huy – Nhân sự | Đánh dấu nhân viên đã nghỉ việc (không đăng nhập được), xóa hàng loạt nhân viên đã nghỉ cùng lịch trực | Hoàn thành |
-| 35 | Chỉ huy – Thiết bị | Thêm / sửa / xóa thiết bị; tự chuyển Đang cấp khi phân công và thu hồi khi hết ca | Hoàn thành |
-| 36 | Hệ thống | Lưu dữ liệu cục bộ, còn nguyên khi tắt / mở lại app; khôi phục dữ liệu mẫu; tự nâng cấp dữ liệu khi cập nhật phiên bản | Hoàn thành |
-| 37 | Hệ thống | CSDL / Backend đồng bộ nhiều thiết bị | Chưa xây dựng |
-| 38 | Hệ thống | Thông báo đẩy cho Chỉ huy khi có sự cố | Chưa xây dựng – cần tài khoản dịch vụ (Firebase / OneSignal) |
+| 26 | Chỉ huy – Địa điểm | Thêm địa điểm tuần tra mới vào lộ trình: chọn trên bản đồ hoặc lấy vị trí GPS hiện tại, đặt tên, bán kính quét | Hoàn thành |
+| 27 | Chỉ huy – Mã QR | Tạo mã QR mới cho địa điểm (tự sinh từ tên hoặc tự nhập, chặn trùng mã), xem mã lớn, chia sẻ / in ảnh mã, sửa và xóa địa điểm | Hoàn thành |
+| 28 | Chỉ huy – Bản đồ | Quét bản đồ khu vực lần đầu bằng cách đi một vòng (giả lập bước đi hoặc GPS thật); đường đã quét làm bản đồ nền cho mọi màn hình bản đồ | Hoàn thành |
+| 29 | Chỉ huy – Lịch trực | Gộp lịch tuần tra vào lịch trực: khi phân ca chọn luôn lộ trình và thiết bị; bảo vệ vào ca thì ca tuần tra được tạo tự động | Hoàn thành |
+| 30 | Chỉ huy – Lịch trực | Trạng thái từng ca (Chưa vào ca / Đã vào ca / Đang tuần tra / Hoàn thành / Vắng), xem chi tiết ca, gỡ ca (thu hồi thiết bị, không gỡ ca đang tuần tra) | Hoàn thành |
+| 31 | Chỉ huy – Lịch trực | Phân ca trực (Sáng / Chiều / Tối), lên lịch trực theo tuần, sao chép lịch tuần trước; chặn trùng ca và người đang nghỉ phép | Hoàn thành |
+| 32 | Chỉ huy – Chấm công | Bảng công tổng theo tháng và chi tiết công từng nhân viên | Hoàn thành |
+| 33 | Chỉ huy – Nghỉ phép | Duyệt / từ chối đơn nghỉ kèm ghi chú; tự gỡ ca trực trong những ngày được nghỉ | Hoàn thành |
+| 34 | Chỉ huy – Nhân sự | Xem danh sách & hồ sơ chi tiết | Hoàn thành |
+| 35 | Chỉ huy – Nhân sự | Thêm / sửa (ràng buộc SĐT, tuổi, mã NV và PIN không trùng) / vuốt để xóa | Hoàn thành |
+| 36 | Chỉ huy – Nhân sự | Đánh dấu nhân viên đã nghỉ việc (không đăng nhập được), xóa hàng loạt nhân viên đã nghỉ cùng lịch trực | Hoàn thành |
+| 37 | Chỉ huy – Thiết bị | Thêm / sửa / xóa thiết bị; tự chuyển Đang cấp khi bảo vệ vào ca và thu hồi khi hết ca | Hoàn thành |
+| 38 | Hệ thống | Lưu dữ liệu cục bộ, còn nguyên khi tắt / mở lại app; khôi phục dữ liệu mẫu; tự nâng cấp dữ liệu khi cập nhật phiên bản | Hoàn thành |
+| 39 | Hệ thống | CSDL / Backend đồng bộ nhiều thiết bị | Chưa xây dựng |
+| 40 | Hệ thống | Thông báo đẩy cho Chỉ huy khi có sự cố | Chưa xây dựng – cần tài khoản dịch vụ (Firebase / OneSignal) |
 
 ---
 
@@ -101,13 +104,13 @@
 
 ![Dashboard bảo vệ](screenshots/02_dashboard_bao_ve.jpg)
 
-**Mô tả:** Sau khi đăng nhập, đầu trang là thẻ chấm công và lịch trực tuần (xem Chức năng 15). Mục "CA TUẦN TRA" hiển thị ca tuần tra được Chỉ huy phân công: khung giờ (06:00 – 14:00), tên tuyến, số điểm đã quét trên tổng số điểm và nhãn trạng thái (Chưa bắt đầu / Đang đi tuần / Hoàn thành). Bên dưới là "Bảng theo dõi sự cố" gồm các sự cố do chính bảo vệ báo cáo hoặc được Chỉ huy điều động chi viện. Nếu chưa được phân công, màn hình hiển thị "Bạn chưa được phân công ca trực nào". Thanh "VUỐT ĐỂ BÁO CÁO" phải kéo hết hành trình mới mở form báo sự cố, tránh bấm nhầm khi đang di chuyển.
+**Mô tả:** Sau khi đăng nhập, đầu trang là thẻ "CA TRỰC HÔM NAY" gom cả chấm công và tuần tra vào một chỗ: ca được phân trong lịch trực (VD: Ca Sáng • 06:00 – 14:00), trạng thái chấm công, tuyến tuần tra, thanh tiến độ quét điểm và nhãn trạng thái (Chưa bắt đầu / Đang đi tuần / Hoàn thành). Nút trên thẻ đổi theo từng bước: "VÀO CA" → "BẮT ĐẦU TUẦN TRA" / "TIẾP TỤC TUẦN TRA" → "KẾT THÚC CA" (xem Chức năng 15). Bên dưới là mục "LỊCH & CÔNG CỦA TÔI" (lịch trực tuần, nút xem công và xin nghỉ phép) và "SỰ CỐ CỦA TÔI" gồm các sự cố do chính bảo vệ báo cáo hoặc được Chỉ huy điều động chi viện. Nếu hôm nay không có ca, thẻ hiển thị "Hôm nay bạn không có ca trực". Thanh "VUỐT ĐỂ BÁO CÁO" phải kéo hết hành trình mới mở form báo sự cố, tránh bấm nhầm khi đang di chuyển.
 
 #### Chức năng 3: Chi tiết ca trực
 
 ![Chi tiết ca trực](screenshots/03_chi_tiet_ca_truc.jpg)
 
-**Mô tả:** Chạm vào thẻ ca trực để xem lộ trình trên bản đồ thật OpenStreetMap (đường phố, tên đường; đường đi dự kiến là nét đứt xanh đậm, điểm chưa quét màu cam, điểm đã quét màu xanh lá kèm vòng tròn bán kính 15 m), thời gian ca, thứ tự các điểm (Nhà Kho → Nhà Xe → Hành Lang), đường đã đi thực tế (nối các vị trí đã quét) và thiết bị được cấp phát. Nút "BẮT ĐẦU TUẦN TRA NGAY" chuyển trạng thái ca sang "Đang đi tuần" và mở màn hình tuần tra. Nếu ca đang dở, nút đổi thành "TIẾP TỤC TUẦN TRA"; ca đã hoàn thành thì nút bị khóa.
+**Mô tả:** Chạm vào thẻ ca trực để xem lộ trình trên bản đồ (đường đi dự kiến là nét đứt xanh đậm, điểm chưa quét màu cam, điểm đã quét màu xanh lá kèm vòng tròn bán kính 15 m), thời gian ca, thứ tự các điểm (Nhà Kho → Nhà Xe → Hành Lang), đường đã đi thực tế (nối các vị trí đã quét) và thiết bị được cấp phát. Nút "BẮT ĐẦU TUẦN TRA NGAY" chuyển trạng thái ca sang "Đang đi tuần" và mở màn hình tuần tra. Nếu ca đang dở, nút đổi thành "TIẾP TỤC TUẦN TRA"; ca đã hoàn thành thì nút bị khóa.
 
 #### Chức năng 4: Tuần tra theo GPS & Geofencing
 
@@ -125,7 +128,7 @@
 
 **Mô tả:** Trên điện thoại, ứng dụng xin quyền Camera rồi mở trình quét có khung ngắm và tia laser. Mã quét được đối chiếu với mã QR quy định của điểm: đúng thì rung, báo "XÁC NHẬN MỤC TIÊU THÀNH CÔNG" và quay lại; sai thì báo đỏ "Sai mã QR" kèm mã cần quét và tạm khóa 2 giây. Việc so khớp bỏ qua chữ hoa / thường và khoảng trắng thừa. Có nút bật đèn flash khi tuần tra ban đêm và nút đổi camera. Sau khi quét, điểm chuyển sang "ĐANG CHỜ MẠNG..." rồi "ĐÃ ĐỒNG BỘ MÁY CHỦ", tiến độ tăng lên 33%, vị trí quét được ghi vào đường đã đi của ca. (Bản chạy trên Web dùng màn hình quét giả lập vì không có camera.)
 
-Tuyến mẫu "Tuyến Trung tâm 59" đặt tại Trung tâm Giáo dục 59 (59 Phạm Thị Lòng, xã Bình Mỹ, TP.HCM – tọa độ 10.98919, 106.57981), gồm 3 điểm tuần tra cách nhau 40 – 80 m; mỗi điểm dán một mã QR với nội dung tương ứng: **Nhà kho** (`nhà kho`), **Nhà xe** (`nhà xe`), **Hành lang** (`hành lang`). Bộ mã in sẵn nằm trong thư mục `docs/qr/` (3 ảnh riêng và 1 trang A4 gồm cả 3 mã).
+Dữ liệu mẫu có lộ trình "Tuyến tuần tra mẫu" gồm 3 điểm tuần tra cách nhau 40 – 80 m; mỗi điểm dán một mã QR với nội dung tương ứng: **Nhà kho** (`nhà kho`), **Nhà xe** (`nhà xe`), **Hành lang** (`hành lang`). Bộ mã in sẵn nằm trong thư mục `docs/qr/` (3 ảnh riêng và 1 trang A4 gồm cả 3 mã).
 
 | Mã QR điểm Nhà kho | Mã QR điểm Nhà xe | Mã QR điểm Hành lang |
 |:-:|:-:|:-:|
@@ -137,7 +140,7 @@ Tuyến mẫu "Tuyến Trung tâm 59" đặt tại Trung tâm Giáo dục 59 (59
 |:-:|:-:|
 | ![Hoàn thành tuần tra](screenshots/08_hoan_thanh_tuan_tra.jpg) | ![Ca hoàn thành](screenshots/08b_ca_hoan_thanh.jpg) |
 
-**Mô tả:** Khi quét đủ các điểm, radar báo "ĐÃ HOÀN TẤT 100%" và hiện dải thông báo "HOÀN THÀNH TUẦN TRA: 3/3 ĐIỂM". Trạng thái ca tự chuyển sang "HOÀN THÀNH", Chỉ huy nhìn thấy ngay trong màn hình Lịch tuần tra.
+**Mô tả:** Khi quét đủ các điểm, radar báo "ĐÃ HOÀN TẤT 100%" và hiện dải thông báo "HOÀN THÀNH TUẦN TRA: 3/3 ĐIỂM". Trạng thái ca tự chuyển sang "HOÀN THÀNH", Chỉ huy nhìn thấy ngay trên Lịch trực và trang Trực ban.
 
 #### Chức năng 7: Báo cáo sự cố
 
@@ -145,15 +148,19 @@ Tuyến mẫu "Tuyến Trung tâm 59" đặt tại Trung tâm Giáo dục 59 (59
 |:-:|:-:|
 | ![Đang ghi âm](screenshots/09a_dang_ghi_am.jpg) | ![Báo cáo sự cố](screenshots/09_bao_cao_su_co.jpg) |
 
-**Mô tả:** Bảo vệ vuốt thanh "VUỐT ĐỂ BÁO CÁO" để mở form, nhập tiêu đề, mô tả và chọn một trong 4 mức độ: Thấp, Vừa, Cao, Khẩn cấp. Ứng dụng kiểm tra: thiếu tiêu đề hoặc mô tả thì báo "Vui lòng nhập Tiêu đề và Mô tả"; chọn mức KHẨN CẤP mà chưa có ảnh hiện trường thì báo lỗi bắt buộc đính kèm ảnh. Nút "CHỤP ẢNH" mở camera (xin quyền Camera nếu chưa có), nút "THƯ VIỆN" chọn ảnh có sẵn; ảnh được thu nhỏ, hiển thị xem trước và có thể bỏ hoặc chụp lại. Nút "GHI ÂM HIỆN TRƯỜNG" xin quyền Micro rồi ghi âm (hiển thị thời gian đang ghi); bấm lần nữa để dừng, sau đó có thể nghe lại, xóa hoặc ghi lại. File ghi âm lưu trong bộ nhớ ứng dụng và phát lại được trong chi tiết sự cố. Bấm "TRUYỀN TIN CẢNH BÁO", sự cố mang tên bảo vệ đang đăng nhập được gửi về Trung tâm Chỉ huy, xuất hiện trong bảng theo dõi của bảo vệ và làm tăng số "Sự cố khẩn" trên dashboard Chỉ huy.
+**Mô tả:** Bảo vệ vuốt thanh "VUỐT ĐỂ BÁO CÁO" để mở form, nhập tiêu đề, mô tả và chọn một trong 4 mức độ: Thấp, Vừa, Cao, Khẩn cấp. Ứng dụng kiểm tra: thiếu tiêu đề hoặc mô tả thì báo "Vui lòng nhập Tiêu đề và Mô tả"; chọn mức KHẨN CẤP mà chưa có ảnh hiện trường thì báo lỗi bắt buộc đính kèm ảnh. Nút "CHỤP ẢNH" mở camera (xin quyền Camera nếu chưa có), nút "THƯ VIỆN" chọn ảnh có sẵn; ảnh được thu nhỏ, hiển thị xem trước và có thể bỏ hoặc chụp lại. Nút "GHI ÂM HIỆN TRƯỜNG" xin quyền Micro rồi ghi âm (hiển thị thời gian đang ghi); bấm lần nữa để dừng, sau đó có thể nghe lại, xóa hoặc ghi lại. File ghi âm lưu trong bộ nhớ ứng dụng và phát lại được trong chi tiết sự cố. Bấm "TRUYỀN TIN CẢNH BÁO", sự cố mang tên bảo vệ đang đăng nhập được gửi về Trung tâm Chỉ huy, xuất hiện trong bảng theo dõi của bảo vệ và làm tăng số "Sự cố mở" trên trang Trực ban của Chỉ huy.
 
-#### Chức năng 8: Trung tâm Chỉ huy (Dashboard)
+#### Chức năng 8: Trung tâm Chỉ huy – 4 tab chức năng
 
-| Phần trên: cảnh báo & thống kê | Các chức năng quản lý |
-|:-:|:-:|
-| ![Dashboard chỉ huy](screenshots/10_dashboard_chi_huy.jpg) | ![Các chức năng](screenshots/10b_dashboard_chi_huy.jpg) |
+| Tab Trực ban | Tab Nhân sự | Tab Thiết lập |
+|:-:|:-:|:-:|
+| ![Trực ban](screenshots/10_dashboard_chi_huy.jpg) | ![Nhân sự](screenshots/10b_dashboard_chi_huy.jpg) | ![Thiết lập](screenshots/10c_thiet_lap.jpg) |
 
-**Mô tả:** Chỉ huy đăng nhập bằng PIN `5678`. Phía trên là 3 chỉ số tính trực tiếp từ dữ liệu: số tuyến đang trực, số bảo vệ đang đi tuần và số sự cố chưa xử lý. Nút khôi phục (↺) trên thanh tiêu đề xóa dữ liệu đã lưu và đưa ứng dụng về dữ liệu mẫu ban đầu (có hộp thoại xác nhận). Khi có sự cố chưa xử lý, thẻ "QUẢN LÝ SỰ CỐ" chuyển viền đỏ kèm dòng "Có N sự cố cần duyệt ngay!". Khi khu vực chưa có bản đồ, đầu trang hiện thẻ "QUÉT BẢN ĐỒ LẦN ĐẦU". Các thẻ bên dưới dẫn đến Lịch tuần tra, Nhân sự, Thiết bị, Lộ trình & QR, Lịch trực tuần, Chấm công, Nghỉ phép (kèm số đơn chờ duyệt), Bản đồ và Giám sát tuần tra.
+**Mô tả:** Chỉ huy đăng nhập bằng PIN `5678`. Các chức năng được gom theo nhóm vào thanh điều hướng 4 tab ở đáy màn hình; biểu tượng tab hiện số đếm khi có sự cố mở hoặc đơn nghỉ phép chờ duyệt.
+- **Trực ban:** 3 chỉ số tính trực tiếp từ dữ liệu (số ca hôm nay, số người đang trực, số sự cố mở); mục "ĐIỀU HÀNH" dẫn tới Sự cố (kèm số sự cố cần xử lý) và Giám sát tuần tra (tên các bảo vệ đang đi tuần); mục "CA TRỰC HÔM NAY" liệt kê ca Sáng / Chiều / Tối với người trực và trạng thái (Chưa vào ca, Đang tuần tra...). Khi khu vực chưa có bản đồ, đầu trang hiện thẻ "QUÉT BẢN ĐỒ LẦN ĐẦU".
+- **Lịch trực:** lịch trực tuần kèm phân ca, lộ trình và thiết bị (Chức năng 11, 17).
+- **Nhân sự:** Nhân viên (số người đang làm / đã nghỉ), Chấm công (số ca và giờ công trong tháng), Nghỉ phép (số đơn chờ duyệt).
+- **Thiết lập:** Bản đồ khu vực, Lộ trình & mã QR, Địa điểm & mã QR, Thiết bị, Khôi phục dữ liệu mẫu (có hộp thoại xác nhận) và Đăng xuất.
 
 #### Chức năng 9: Quản lý & xử lý sự cố
 
@@ -169,15 +176,15 @@ Tuyến mẫu "Tuyến Trung tâm 59" đặt tại Trung tâm Giáo dục 59 (59
 |:-:|:-:|:-:|
 | ![Danh sách lộ trình](screenshots/20_lo_trinh.jpg) | ![Mã QR các điểm](screenshots/21_ma_qr_lo_trinh.jpg) | ![Vẽ lộ trình](screenshots/22_ve_lo_trinh.jpg) |
 
-**Mô tả:** Chỉ huy nhập tên lộ trình, chọn chế độ "VẼ ĐƯỜNG ĐI" rồi chạm lên bản đồ để tạo các đỉnh của đường đi; chuyển sang "CHẤM ĐIỂM" để đặt các điểm tuần tra (mỗi điểm tự sinh tên và mã QR, bán kính 15 m). Lộ trình được vẽ trực tiếp trên bản đồ thật (OpenStreetMap): kéo để di chuyển, chụm hai ngón để phóng to, mỗi lần chạm lấy đúng tọa độ GPS của vị trí đó; vòng tròn quanh mỗi điểm thể hiện bán kính 15 m thật trên bản đồ. Nút "HOÀN TÁC" bỏ nét / điểm vừa thêm, chạm vào tên điểm để đổi tên (VD: "Cổng sau"). Nếu thiếu tên, đường đi dưới 2 nét hoặc chưa có điểm nào, ứng dụng báo lỗi; lưu thành công thì lộ trình xuất hiện trong danh sách và khi tạo lịch. Mở một lộ trình để xem bản đồ và mã QR của từng điểm (kèm tên, mã, tọa độ, bán kính) để in và dán đúng vị trí – đây chính là mã bảo vệ phải quét khi đi tuần. Vuốt để xóa lộ trình; lộ trình đang được dùng trong lịch chưa hoàn thành sẽ không cho xóa.
+**Mô tả:** Chỉ huy nhập tên lộ trình, chọn chế độ "VẼ ĐƯỜNG ĐI" rồi chạm lên bản đồ để tạo các đỉnh của đường đi; chuyển sang "CHẤM ĐIỂM" để đặt các điểm tuần tra (mỗi điểm tự sinh tên và mã QR, bán kính 15 m). Lộ trình được vẽ trực tiếp trên bản đồ theo tọa độ GPS, nền là các đường đã quét của khu vực: kéo để di chuyển, chụm hai ngón để phóng to, mỗi lần chạm lấy đúng tọa độ GPS của vị trí đó; vòng tròn quanh mỗi điểm thể hiện bán kính 15 m thật theo tỷ lệ bản đồ. Nút "HOÀN TÁC" bỏ nét / điểm vừa thêm, chạm vào tên điểm để đổi tên (VD: "Cổng sau"). Nếu thiếu tên, đường đi dưới 2 nét hoặc chưa có điểm nào, ứng dụng báo lỗi; lưu thành công thì lộ trình xuất hiện trong danh sách và khi phân ca. Mở một lộ trình để xem bản đồ và mã QR của từng điểm (kèm tên, mã, tọa độ, bán kính) – đây chính là mã bảo vệ phải quét khi đi tuần; chạm vào một mã để phóng to và in, nút "THÊM ĐỊA ĐIỂM" thêm điểm mới vào lộ trình (Chức năng 21). Vuốt để xóa lộ trình; lộ trình đang được dùng trong ca tuần tra chưa hoàn thành sẽ không cho xóa.
 
-#### Chức năng 11: Lịch tuần tra & Tạo lịch
+#### Chức năng 11: Phân ca kèm lộ trình & thiết bị
 
-| Danh sách lịch | Tạo lịch mới |
+| Phân ca: chọn lộ trình, thiết bị, bảo vệ | Chi tiết một ca trực |
 |:-:|:-:|
-| ![Lịch tuần tra](screenshots/11_lich_tuan_tra.jpg) | ![Tạo lịch](screenshots/12_tao_lich.jpg) |
+| ![Phân ca](screenshots/11_phan_ca.jpg) | ![Chi tiết ca](screenshots/12_chi_tiet_ca.jpg) |
 
-**Mô tả:** Danh sách lịch hiển thị tuyến (VD: Tuyến Trung tâm 59 – 3 chốt), trạng thái (màu cam: chưa bắt đầu, xanh lá: đang đi tuần, xanh dương: hoàn thành), người phụ trách, giờ ca, số điểm đã quét và số thiết bị được cấp. Bấm "TẠO LỊCH MỚI" để chọn lộ trình đã vẽ, nhập giờ bắt đầu / kết thúc (định dạng HH:mm, giờ kết thúc phải sau giờ bắt đầu), chọn bảo vệ và chọn thiết bị. Chỉ thiết bị đang "SẴN SÀNG" mới hiện để chọn; sau khi lưu, thiết bị chuyển sang "ĐANG CẤP" và tự được thu hồi về kho khi ca hoàn thành. Vuốt một lịch sang trái để hủy lịch (thiết bị cũng được thu hồi).
+**Mô tả:** Lịch tuần tra được gộp vào lịch trực nên Chỉ huy chỉ phải lên lịch một lần. Trong tab Lịch trực, bấm "+" ở một ca để mở bảng phân ca: chọn lộ trình tuần tra (mặc định lộ trình đầu tiên), chọn thiết bị sẽ cấp khi vào ca (Bộ đàm, Đèn pin...), rồi chạm vào tên bảo vệ. Khi bảo vệ bấm "VÀO CA", ứng dụng tự tạo ca tuần tra đúng giờ ca theo lộ trình đã chọn, chuyển thiết bị sang "ĐANG CẤP" và thu hồi về kho khi hoàn thành tuần tra hoặc kết thúc ca. Chạm vào tên một người trong lịch để xem chi tiết ca: trạng thái, lộ trình, tiến độ quét điểm và thiết bị; ca đang tuần tra có nút "GIÁM SÁT", ca chưa diễn ra có nút "GỠ KHỎI CA" (gỡ luôn ca tuần tra và thu hồi thiết bị). Ca đang tuần tra thì không gỡ được.
 
 #### Chức năng 12: Quản lý nhân sự
 
@@ -191,21 +198,21 @@ Tuyến mẫu "Tuyến Trung tâm 59" đặt tại Trung tâm Giáo dục 59 (59
 
 ![Quản lý thiết bị](screenshots/19_thiet_bi.jpg)
 
-**Mô tả:** Danh sách thiết bị (Bộ đàm, Đèn pin...) kèm mã và nhãn trạng thái màu xanh "SẴN SÀNG" hoặc màu cam "ĐANG CẤP". Chỉ huy có thể thêm, sửa tên / mã / trạng thái và vuốt để xóa thiết bị. Trạng thái thiết bị liên kết với lịch tuần tra: thiết bị đã cấp phát sẽ không xuất hiện khi tạo lịch mới.
+**Mô tả:** Danh sách thiết bị (Bộ đàm, Đèn pin...) kèm mã và nhãn trạng thái màu xanh "SẴN SÀNG" hoặc màu cam "ĐANG CẤP". Chỉ huy có thể thêm, sửa tên / mã / trạng thái và vuốt để xóa thiết bị. Trạng thái thiết bị liên kết với lịch trực: thiết bị được chọn khi phân ca chuyển sang "ĐANG CẤP" khi bảo vệ vào ca và tự thu hồi khi hoàn thành tuần tra hoặc kết thúc ca.
 
 #### Chức năng 14: Giám sát tuần tra
 
 ![Giám sát tuần tra](screenshots/16_giam_sat.jpg)
 
-**Mô tả:** Từ thẻ "GIÁM SÁT" trên dashboard, Chỉ huy xem bản đồ của ca đang đi tuần: đường dự kiến, các điểm tuần tra (điểm đã quét đổi màu) và đường đã đi thực tế nối các vị trí quét. Bản đồ là bản đồ thật, có thể kéo và phóng to. Bên dưới là danh sách các ca đang đi tuần với tên bảo vệ, giờ ca, thanh tiến độ, số điểm đã quét, giờ quét gần nhất và điểm kế tiếp; chạm vào ca nào thì bản đồ hiển thị ca đó. Khi không có ca nào đang diễn ra, màn hình báo "Hiện không có ca tuần tra nào đang diễn ra.". Vì chưa có Backend, màn hình hiển thị dữ liệu trên cùng thiết bị.
+**Mô tả:** Từ mục "Giám sát tuần tra" trên tab Trực ban (hoặc nút "GIÁM SÁT" trong chi tiết ca đang tuần tra), Chỉ huy xem bản đồ của ca đang đi tuần: đường dự kiến, các điểm tuần tra (điểm đã quét đổi màu) và đường đã đi thực tế nối các vị trí quét. Bản đồ có thể kéo và phóng to. Bên dưới là danh sách các ca đang đi tuần với tên bảo vệ, giờ ca, thanh tiến độ, số điểm đã quét, giờ quét gần nhất và điểm kế tiếp; chạm vào ca nào thì bản đồ hiển thị ca đó. Khi không có ca nào đang diễn ra, màn hình báo "Hiện không có ca tuần tra nào đang diễn ra.". Vì chưa có Backend, màn hình hiển thị dữ liệu trên cùng thiết bị.
 
 #### Chức năng 15: Chấm công của bảo vệ
 
-| Thẻ chấm công trên dashboard | Công cá nhân theo tháng |
+| Sau khi vào ca | Công cá nhân theo tháng |
 |:-:|:-:|
 | ![Chấm công](screenshots/23_cham_cong_bao_ve.jpg) | ![Công cá nhân](screenshots/24_cong_ca_nhan.jpg) |
 
-**Mô tả:** Đầu dashboard của bảo vệ là thẻ "CHẤM CÔNG" lấy ca trực trong ngày từ lịch trực tuần (VD: Ca Sáng 06:00 – 14:00). Nút "VÀO CA" chỉ bấm được từ 30 phút trước giờ bắt đầu đến khi hết ca; vào trễ quá 10 phút sẽ ghi nhận số phút trễ. Khi xong ca bấm "KẾT THÚC CA", ứng dụng tính số giờ làm. Bên dưới là dải lịch trực tuần này (S: sáng, C: chiều, T: tối, P: nghỉ phép) và hai nút "CÔNG CỦA TÔI", "XIN NGHỈ PHÉP". Màn hình công cá nhân cho chọn tháng, hiển thị số ca đã làm, tổng giờ, số lần và số phút đi trễ, ngày nghỉ phép, ca vắng (có lịch nhưng không chấm công) và danh sách từng lần chấm công.
+**Mô tả:** Chấm công nằm ngay trong thẻ "CA TRỰC HÔM NAY", lấy ca trực trong ngày từ lịch trực tuần. Nút "VÀO CA" chỉ bấm được từ 30 phút trước giờ bắt đầu đến khi hết ca; vào trễ quá 10 phút sẽ ghi nhận số phút trễ (VD: "Đang trong ca từ 12:31 (trễ 391 phút)"). Vào ca xong, thẻ hiện ngay nút "BẮT ĐẦU TUẦN TRA" để mở lộ trình và nút "KẾT THÚC CA" để chấm công ra; ứng dụng tính số giờ làm. Bên dưới là mục "LỊCH & CÔNG CỦA TÔI": dải lịch trực tuần này (S: sáng, C: chiều, T: tối, P: nghỉ phép) và hai nút "CÔNG CỦA TÔI", "XIN NGHỈ PHÉP". Màn hình công cá nhân cho chọn tháng, hiển thị số ca đã làm, tổng giờ, số lần và số phút đi trễ, ngày nghỉ phép, ca vắng (có lịch nhưng không chấm công) và danh sách từng lần chấm công.
 
 #### Chức năng 16: Xin nghỉ phép & duyệt nghỉ phép
 
@@ -213,13 +220,13 @@ Tuyến mẫu "Tuyến Trung tâm 59" đặt tại Trung tâm Giáo dục 59 (59
 |:-:|:-:|
 | ![Xin nghỉ phép](screenshots/25_xin_nghi_phep.jpg) | ![Duyệt nghỉ phép](screenshots/28_duyet_nghi_phep.jpg) |
 
-**Mô tả:** Bảo vệ chọn ngày bắt đầu, ngày kết thúc (bằng lịch chọn ngày), nhập lý do và bấm "GỬI ĐƠN". Ứng dụng kiểm tra: phải có lý do, không xin cho ngày đã qua, ngày kết thúc không trước ngày bắt đầu và không trùng với đơn khác. Đơn hiện ở mục "ĐƠN CỦA TÔI" với nhãn Chờ duyệt / Đã duyệt / Từ chối. Trên dashboard Chỉ huy, thẻ "NGHỈ PHÉP (n)" cho biết số đơn đang chờ. Chỉ huy bấm "DUYỆT" hoặc "TỪ CHỐI" và có thể ghi chú; khi duyệt, các ca trực của nhân viên trong những ngày nghỉ được tự động gỡ khỏi lịch, và từ đó không thể phân ca cho người này vào ngày nghỉ.
+**Mô tả:** Bảo vệ chọn ngày bắt đầu, ngày kết thúc (bằng lịch chọn ngày), nhập lý do và bấm "GỬI ĐƠN". Ứng dụng kiểm tra: phải có lý do, không xin cho ngày đã qua, ngày kết thúc không trước ngày bắt đầu và không trùng với đơn khác. Đơn hiện ở mục "ĐƠN CỦA TÔI" với nhãn Chờ duyệt / Đã duyệt / Từ chối. Phía Chỉ huy, biểu tượng tab Nhân sự hiện số đơn đang chờ và mục Nghỉ phép ghi "n đơn đang chờ duyệt". Chỉ huy bấm "DUYỆT" hoặc "TỪ CHỐI" và có thể ghi chú; khi duyệt, các ca trực của nhân viên trong những ngày nghỉ được tự động gỡ khỏi lịch, và từ đó không thể phân ca cho người này vào ngày nghỉ.
 
 #### Chức năng 17: Phân ca trực & lịch trực tuần
 
 ![Lịch trực tuần](screenshots/26_lich_truc_tuan.jpg)
 
-**Mô tả:** Màn hình "LỊCH TRỰC TUẦN" hiển thị 7 ngày của tuần, mỗi ngày có 3 ca: Sáng (06:00 – 14:00), Chiều (14:00 – 22:00), Tối (22:00 – 06:00). Nút mũi tên chuyển tuần trước / tuần sau, ngày hôm nay được viền xanh và dòng "Nghỉ phép: …" cho biết ai đang nghỉ. Bấm "+" ở một ca để chọn bảo vệ: danh sách chỉ gồm người đang làm việc, chưa có ca trong ngày đó và không nghỉ phép. Bấm "x" trên tên để gỡ khỏi ca. Nút sao chép trên thanh tiêu đề chép toàn bộ lịch của tuần trước sang tuần đang xem (bỏ qua các ca bị trùng hoặc người đang nghỉ).
+**Mô tả:** Màn hình "LỊCH TRỰC TUẦN" hiển thị 7 ngày của tuần, mỗi ngày có 3 ca: Sáng (06:00 – 14:00), Chiều (14:00 – 22:00), Tối (22:00 – 06:00). Nút mũi tên chuyển tuần trước / tuần sau, ngày hôm nay được viền xanh kèm nhãn "HÔM NAY" và dòng "Nghỉ phép: …" cho biết ai đang nghỉ. Chấm màu trước mỗi tên cho biết trạng thái ca (xám: chưa vào ca, cam: đã vào ca, xanh lá: đang tuần tra, xanh dương: hoàn thành, đỏ: vắng), có chú thích ở đầu trang. Bấm "+" ở một ca để phân ca kèm lộ trình và thiết bị (Chức năng 11); danh sách bảo vệ chỉ gồm người đang làm việc, chưa có ca trong ngày đó và không nghỉ phép. Chạm vào tên để xem chi tiết ca, bấm "x" để gỡ khỏi ca. Nút sao chép trên thanh tiêu đề chép toàn bộ lịch của tuần trước sang tuần đang xem (bỏ qua các ca bị trùng hoặc người đang nghỉ).
 
 #### Chức năng 18: Bảng chấm công tổng & nhân viên đã nghỉ việc
 
@@ -235,7 +242,7 @@ Tuyến mẫu "Tuyến Trung tâm 59" đặt tại Trung tâm Giáo dục 59 (59
 |:-:|:-:|
 | ![Đang quét bản đồ](screenshots/30_quet_ban_do.jpg) | ![Bản đồ đã lưu](screenshots/30b_quet_ban_do.jpg) |
 
-**Mô tả:** Khi khu vực chưa có bản đồ, dashboard Chỉ huy hiện thẻ "QUÉT BẢN ĐỒ LẦN ĐẦU". Chỉ huy bấm "BẮT ĐẦU QUÉT" rồi đi một vòng các lối đi nội bộ: việc quét thực hiện trên bản đồ thật OpenStreetMap; ở chế độ giả lập, chạm vào một vị trí trên bản đồ để người quét đi bộ tới điểm đó và ứng dụng ghi lại đường đi; khi chạy bản GPS thật (`USE_REAL_GPS=true`) đường đi lấy từ vị trí thực. Màn hình hiển thị số điểm đã ghi và số mét đã đi. Bấm "DỪNG & LƯU ĐƯỜNG ĐI" để lưu thành một đoạn đường; có thể quét thêm nhiều đoạn hoặc xóa để quét lại. Các đoạn đường đã quét được vẽ làm nền (lối đi nội bộ) ở mọi bản đồ: chi tiết ca, vẽ lộ trình, mã QR lộ trình và giám sát tuần tra.
+**Mô tả:** Khi khu vực chưa có bản đồ, tab Trực ban hiện thẻ "QUÉT BẢN ĐỒ LẦN ĐẦU" (sau này mở lại từ tab Thiết lập → Bản đồ khu vực). Các điểm tuần tra của mọi lộ trình hiện sẵn trên bản đồ để người quét đi đúng các lối đi qua từng điểm. Chỉ huy bấm "BẮT ĐẦU QUÉT" rồi đi một vòng các lối đi nội bộ: ở chế độ giả lập, chạm vào một vị trí trên bản đồ để người quét đi bộ tới điểm đó và ứng dụng ghi lại đường đi; khi chạy bản GPS thật (`USE_REAL_GPS=true`) đường đi lấy từ vị trí thực. Màn hình hiển thị số điểm đã ghi và số mét đã đi. Bấm "DỪNG & LƯU ĐƯỜNG ĐI" để lưu thành một đoạn đường; có thể quét thêm nhiều đoạn hoặc xóa để quét lại. Các đoạn đường đã quét được vẽ làm nền (lối đi nội bộ) ở mọi bản đồ: chi tiết ca, vẽ lộ trình, mã QR lộ trình và giám sát tuần tra.
 
 #### Chức năng 20: Báo cháy
 
@@ -243,29 +250,39 @@ Tuyến mẫu "Tuyến Trung tâm 59" đặt tại Trung tâm Giáo dục 59 (59
 |:-:|:-:|:-:|
 | ![Báo cháy](screenshots/31_bao_chay_bao_ve.jpg) | ![Cảnh báo bảo vệ](screenshots/31b_bao_chay_bao_ve.jpg) | ![Cảnh báo cháy](screenshots/32_bao_chay_chi_huy.jpg) |
 
-**Mô tả:** Trên dashboard bảo vệ có nút "BÁO CHÁY" màu cam đỏ. Bấm vào để chọn vị trí cháy (các điểm tuần tra hoặc "Khu vực khác"), xác nhận lần nữa để tránh bấm nhầm. Ứng dụng tạo sự cố mức KHẨN CẤP "BÁO CHÁY: <vị trí>", rung máy và phát còi báo động lặp liên tục. Trên dashboard Chỉ huy và bảo vệ hiện dải cảnh báo nhấp nháy đỏ – cam với vị trí, người báo và giờ báo; nút "TẮT CÒI" tắt âm thanh, nút "XỬ LÝ" mở chi tiết sự cố để điều động chi viện và đóng sự cố. Khi sự cố được đóng, cảnh báo tự biến mất.
+**Mô tả:** Trên dashboard bảo vệ có nút "BÁO CHÁY" màu cam đỏ. Bấm vào để chọn vị trí cháy (các điểm tuần tra hoặc "Khu vực khác"), xác nhận lần nữa để tránh bấm nhầm. Ứng dụng tạo sự cố mức KHẨN CẤP "BÁO CHÁY: <vị trí>", rung máy và phát còi báo động lặp liên tục. Trên trang Trực ban của Chỉ huy và trang chủ của bảo vệ hiện dải cảnh báo nhấp nháy đỏ – cam với vị trí, người báo và giờ báo; nút "TẮT CÒI" tắt âm thanh, nút "XỬ LÝ" mở chi tiết sự cố để điều động chi viện và đóng sự cố. Khi sự cố được đóng, cảnh báo tự biến mất.
+
+#### Chức năng 21: Thêm địa điểm tuần tra & tạo mã QR mới
+
+| Danh sách địa điểm & mã QR | Thêm địa điểm mới | Mã QR để in / chia sẻ |
+|:-:|:-:|:-:|
+| ![Địa điểm & mã QR](screenshots/33_dia_diem_qr.jpg) | ![Thêm địa điểm](screenshots/34_them_dia_diem.jpg) | ![Mã QR địa điểm](screenshots/35_ma_qr_dia_diem.jpg) |
+
+**Mô tả:** Từ tab Thiết lập → "Địa điểm & mã QR", Chỉ huy xem toàn bộ địa điểm tuần tra theo từng lộ trình, mỗi dòng có mã QR thu nhỏ, nội dung mã và bán kính quét. Bấm "THÊM ĐỊA ĐIỂM" (hoặc "Thêm" ở một lộ trình, hoặc nút cùng tên trong chi tiết lộ trình) để mở màn hình thêm địa điểm: chạm vào bản đồ để đặt vị trí (các điểm sẵn có hiện màu xanh để tham chiếu) hoặc bấm "VỊ TRÍ GPS" để lấy đúng vị trí đang đứng; nhập tên địa điểm, nội dung mã QR tự sinh theo tên (VD: "Kho B" → `kho b`) và có thể sửa lại; kéo thanh trượt để chọn bán kính quét 5 – 50 m. Mã QR xem trước thay đổi ngay khi gõ. Khi lưu, ứng dụng kiểm tra: phải có vị trí, tên và nội dung mã; không trùng mã QR với bất kỳ địa điểm nào (không phân biệt hoa thường, khoảng trắng) và không trùng tên trong cùng lộ trình. Địa điểm mới được thêm vào lộ trình, các ca tuần tra chưa bắt đầu của lộ trình cũng nhận thêm điểm này; ca đang tuần tra giữ nguyên. Chạm vào một địa điểm để mở mã QR khổ lớn (tên lộ trình, số thứ tự điểm, tên và nội dung mã), bấm "CHIA SẺ / IN MÃ QR" để xuất ảnh mã QR gửi qua Zalo, Drive, email hoặc máy in rồi dán đúng tại địa điểm. Nút bút chì sửa địa điểm, nút thùng rác xóa địa điểm (có xác nhận, lộ trình phải còn ít nhất 1 điểm).
 
 ---
 
 ## 3. KẾT LUẬN
 
 **Kết quả đạt được**
-- Hoàn thành ứng dụng Flutter cho 2 vai trò Bảo vệ và Chỉ huy với luồng nghiệp vụ khép kín: Chỉ huy vẽ lộ trình → tạo lịch và cấp thiết bị → Bảo vệ nhận ca, đi tuần theo GPS, quét QR từng điểm → tiến độ và trạng thái ca cập nhật lại cho Chỉ huy.
+- Hoàn thành ứng dụng Flutter cho 2 vai trò Bảo vệ và Chỉ huy với luồng nghiệp vụ khép kín: Chỉ huy quét bản đồ và vẽ lộ trình → phân ca trực kèm lộ trình và thiết bị → Bảo vệ vào ca (tự tạo ca tuần tra), đi tuần theo GPS, quét QR từng điểm → tiến độ và trạng thái ca cập nhật lại cho Chỉ huy.
 - Có cơ chế chống gian lận check-in bằng Geofencing (Haversine) kết hợp quét mã QR đúng điểm.
 - Luồng báo cáo, điều động chi viện và đóng sự cố hoạt động giữa hai vai trò.
 - Quản lý nhân sự và thiết bị đầy đủ thêm / sửa / xóa, có ràng buộc dữ liệu; mỗi bảo vệ đăng nhập bằng PIN riêng.
 - Báo cáo sự cố kèm ảnh và ghi âm hiện trường; sinh mã QR cho từng điểm tuần tra, có bộ mã in sẵn cho 3 điểm Nhà kho / Nhà xe / Hành lang.
 - Chỉ huy giám sát tiến độ và đường đã đi của các ca đang tuần tra.
 - Quản lý ca trực theo tuần, chấm công vào / ra ca có tính đi trễ, bảng công tổng và công cá nhân, xin nghỉ phép và duyệt nghỉ phép; quản lý nhân viên đã nghỉ việc.
+- Thêm địa điểm tuần tra mới ngay trên bản đồ hoặc theo GPS, tự tạo mã QR không trùng và xuất ảnh mã QR để in.
 - Báo cháy có còi và cảnh báo nhấp nháy; quét bản đồ khu vực lần đầu để làm bản đồ nền.
+- Giao diện thống nhất một bộ màu; Chỉ huy dùng thanh điều hướng 4 tab (Trực ban, Lịch trực, Nhân sự, Thiết lập), bảo vệ có một thẻ ca trực gom chấm công và tuần tra.
 - Dữ liệu được lưu cục bộ, còn nguyên khi tắt / mở lại ứng dụng.
-- Mã nguồn tổ chức theo Clean Architecture, quản lý trạng thái bằng Riverpod; `flutter analyze` không còn lỗi, 52/52 test tự động đạt; đã build APK và chạy trên điện thoại Samsung (Android 11).
+- Mã nguồn tổ chức theo Clean Architecture, quản lý trạng thái bằng Riverpod; `flutter analyze` không còn lỗi, 63/63 test tự động đạt; đã build APK và chạy trên điện thoại Samsung (Android 11).
 
 **Hạn chế**
 - Chưa có Backend: dữ liệu chỉ lưu trên từng thiết bị nên Bảo vệ và Chỉ huy phải dùng chung một máy để thấy dữ liệu của nhau.
 - Mã PIN lưu cục bộ, chưa mã hóa và chưa có xác thực trên máy chủ.
 - Đồng bộ ngoại tuyến mới ở mức mô phỏng trạng thái.
-- Bản đồ cần kết nối mạng để tải nền bản đồ (chưa lưu bản đồ ngoại tuyến).
+- Bản đồ chỉ vẽ các đường đã quét, chưa có nền đường phố, tòa nhà.
 - Chưa có thông báo đẩy khi có sự cố mới.
 
 **Hướng phát triển**

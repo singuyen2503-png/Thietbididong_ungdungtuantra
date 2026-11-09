@@ -6,6 +6,7 @@ import 'package:local_auth/local_auth.dart';
 import '../../state/manager_state.dart';
 import '../dashboard/guard_dashboard_screen.dart';
 import '../dashboard/manager_dashboard_screen.dart';
+import '../../../core/theme/app_theme.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -108,10 +109,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const primaryColor = Color(0xFF00FF9D);
+    const primaryColor = AppColors.primary;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0E17),
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -215,10 +216,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           alignment: Alignment.center,
           decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: const Color(0xFF151E2E),
+              color: AppColors.surface,
               border: Border.all(
-                  color: const Color(0xFF00FF9D).withValues(alpha: 0.3),
-                  width: 1)),
+                  color: AppColors.primary.withValues(alpha: 0.3), width: 1)),
           child: Text(number,
               style: const TextStyle(
                   fontSize: 32,
@@ -248,11 +248,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             alignment: Alignment.center,
             decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: const Color(0xFF151E2E),
+                color: AppColors.surface,
                 border: Border.all(
-                    color: const Color(0xFF00FF9D).withValues(alpha: 0.8),
-                    width: 2)),
+                    color: AppColors.primary.withValues(alpha: 0.8), width: 2)),
             child: const Icon(Icons.fingerprint,
-                size: 36, color: Color(0xFF00FF9D))));
+                size: 36, color: AppColors.primary)));
   }
 }

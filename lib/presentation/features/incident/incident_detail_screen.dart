@@ -4,6 +4,8 @@ import '../../../domain/entities/models.dart';
 import '../../state/manager_state.dart';
 import '../../widgets/incident_audio.dart';
 import '../../widgets/incident_photo.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/utils/date_utils.dart';
 
 class IncidentDetailScreen extends ConsumerStatefulWidget {
   final Incident incident;
@@ -29,10 +31,10 @@ class _IncidentDetailScreenState extends ConsumerState<IncidentDetailScreen> {
         context: context,
         builder: (ctx) => StatefulBuilder(builder: (context, setState) {
               return AlertDialog(
-                backgroundColor: const Color(0xFF151E2E),
+                backgroundColor: AppColors.surface,
                 title: const Text('ĐIỀU ĐỘNG CHI VIỆN',
                     style: TextStyle(
-                        color: Color(0xFF00FF9D), fontWeight: FontWeight.bold)),
+                        color: AppColors.primary, fontWeight: FontWeight.bold)),
                 content: SizedBox(
                   width: double.maxFinite,
                   child: activeGuards.isEmpty
@@ -50,7 +52,7 @@ class _IncidentDetailScreenState extends ConsumerState<IncidentDetailScreen> {
                               subtitle: Text('SĐT: ${g.phone}',
                                   style: const TextStyle(color: Colors.grey)),
                               value: selectedGuards.contains(g.name),
-                              activeColor: const Color(0xFF00FF9D),
+                              activeColor: AppColors.primary,
                               onChanged: (val) {
                                 setState(() {
                                   val == true
@@ -69,7 +71,7 @@ class _IncidentDetailScreenState extends ConsumerState<IncidentDetailScreen> {
                           style: TextStyle(color: Colors.grey))),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF00FF9D)),
+                        backgroundColor: AppColors.primary),
                     onPressed: () {
                       if (selectedGuards.isNotEmpty) {
                         ref
@@ -98,7 +100,7 @@ class _IncidentDetailScreenState extends ConsumerState<IncidentDetailScreen> {
         .firstWhere((i) => i.id == widget.incident.id);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0E17),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: Colors.red.shade900,
         title:
@@ -127,7 +129,7 @@ class _IncidentDetailScreenState extends ConsumerState<IncidentDetailScreen> {
                           color: Colors.white, fontWeight: FontWeight.bold)),
                 ),
                 Text(
-                    '${updatedIncident.createdAt.hour.toString().padLeft(2, '0')}:${updatedIncident.createdAt.minute.toString().padLeft(2, '0')} - ${updatedIncident.createdAt.day}/${updatedIncident.createdAt.month}',
+                    '${formatHourMinute(updatedIncident.createdAt)} - ${formatDayMonth(updatedIncident.createdAt)}',
                     style: const TextStyle(
                         color: Colors.grey, fontWeight: FontWeight.bold)),
               ],
@@ -146,7 +148,7 @@ class _IncidentDetailScreenState extends ConsumerState<IncidentDetailScreen> {
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                  color: const Color(0xFF151E2E),
+                  color: AppColors.surface,
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: Colors.white12)),
               child: Text(updatedIncident.description,

@@ -17,7 +17,7 @@ class LocalStore {
   static const keySiteTracks = 'site_tracks';
   static const keyLastGuardId = 'last_guard_id';
   static const keyDataVersion = 'data_version';
-  static const dataVersion = 5;
+  static const dataVersion = 7;
 
   static const _dataKeys = [
     keyIncidents,

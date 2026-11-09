@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../state/manager_state.dart';
 import '../../../domain/entities/equipment.dart';
+import '../../../core/theme/app_theme.dart';
 
 class EquipmentScreen extends ConsumerWidget {
   const EquipmentScreen({super.key});
@@ -19,7 +20,7 @@ class EquipmentScreen extends ConsumerWidget {
       builder: (ctx) => StatefulBuilder(
         builder: (context, setState) {
           return AlertDialog(
-            backgroundColor: const Color(0xFF151E2E),
+            backgroundColor: AppColors.surface,
             title: Text(isEdit ? 'CẬP NHẬT THIẾT BỊ' : 'THÊM THIẾT BỊ MỚI',
                 style: const TextStyle(
                     fontWeight: FontWeight.bold, color: Colors.orangeAccent)),
@@ -42,7 +43,7 @@ class EquipmentScreen extends ConsumerWidget {
                           labelStyle: TextStyle(color: Colors.grey))),
                   const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
-                    dropdownColor: const Color(0xFF151E2E),
+                    dropdownColor: AppColors.surface,
                     initialValue: selectedStatus,
                     style: const TextStyle(color: Colors.white),
                     decoration: const InputDecoration(
@@ -105,9 +106,9 @@ class EquipmentScreen extends ConsumerWidget {
     final eqList = ref.watch(equipmentProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0E17),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF151E2E),
+        backgroundColor: AppColors.surface,
         title: const Text('QUẢN LÝ THIẾT BỊ',
             style: TextStyle(
                 color: Colors.orangeAccent, fontWeight: FontWeight.bold)),
@@ -138,7 +139,7 @@ class EquipmentScreen extends ConsumerWidget {
                         SnackBar(content: Text('Đã xóa ${eq.name}')));
                   },
                   child: Card(
-                    color: const Color(0xFF151E2E),
+                    color: AppColors.surface,
                     elevation: 3,
                     margin: const EdgeInsets.only(bottom: 12),
                     child: ListTile(

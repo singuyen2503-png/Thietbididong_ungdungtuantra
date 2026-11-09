@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import '../../core/utils/lat_lng.dart';
+import '../../core/theme/app_theme.dart';
 
 class TacticalRadarWidget extends StatefulWidget {
   final double progress;
@@ -42,11 +43,10 @@ class _TacticalRadarWidgetState extends State<TacticalRadarWidget>
       width: double.infinity,
       height: 250,
       decoration: BoxDecoration(
-          color: const Color(0xFF0A0E17),
+          color: AppColors.background,
           border: Border(
               bottom: BorderSide(
-                  color: const Color(0xFF00FF9D).withValues(alpha: 0.3),
-                  width: 2))),
+                  color: AppColors.primary.withValues(alpha: 0.3), width: 2))),
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -86,8 +86,8 @@ class _TacticalRadarWidgetState extends State<TacticalRadarWidget>
                     shape: BoxShape.circle,
                     gradient: SweepGradient(
                       colors: [
-                        const Color(0xFF00FF9D).withValues(alpha: 0.0),
-                        const Color(0xFF00FF9D).withValues(alpha: 0.6)
+                        AppColors.primary.withValues(alpha: 0.0),
+                        AppColors.primary.withValues(alpha: 0.6)
                       ],
                       stops: const [0.7, 1.0],
                     ),
@@ -98,13 +98,13 @@ class _TacticalRadarWidgetState extends State<TacticalRadarWidget>
           ),
           if (widget.currentGuardLocation != null && widget.targets != null)
             ..._buildDynamicTargets(),
-          _buildBlip(const Color(0xFF00FF9D), size: 12),
+          _buildBlip(AppColors.primary, size: 12),
           Positioned(
             bottom: 16,
             right: 16,
             child: Text('ĐÃ HOÀN TẤT ${(widget.progress * 100).toInt()}%',
                 style: const TextStyle(
-                    color: Color(0xFF00FF9D),
+                    color: AppColors.primary,
                     fontFamily: 'Roboto',
                     fontSize: 16,
                     fontWeight: FontWeight.bold)),

@@ -1,6 +1,6 @@
 # Tactical Patrol Ops
 
-Ứng dụng Flutter quản lý tuần tra bảo vệ cho Trung tâm Giáo dục 59 (59 Phạm Thị Lòng, xã Bình Mỹ, TP.HCM), gồm 2 vai trò **Bảo vệ** và **Chỉ huy**.
+Ứng dụng Flutter quản lý tuần tra bảo vệ, gồm 2 vai trò **Bảo vệ** và **Chỉ huy**.
 Đồ án cuối kỳ học phần *Lập trình trên thiết bị di động (ECMP177)*.
 
 ## Chức năng chính
@@ -16,17 +16,18 @@
 - Xin nghỉ phép và theo dõi trạng thái đơn
 
 **Chỉ huy**
-- Dashboard thống kê tuyến đang trực, nhân sự đi tuần, sự cố chờ xử lý
+- Thanh điều hướng 4 tab: Trực ban (ca hôm nay, sự cố, giám sát), Lịch trực, Nhân sự, Thiết lập
 - Giám sát các ca đang đi tuần: tiến độ, đường đã đi, điểm kế tiếp
 - Xử lý sự cố: điều động chi viện, đóng sự cố kèm ghi chú
 - Vẽ lộ trình, chấm điểm tuần tra, in mã QR cho từng điểm
 - Phân ca trực Sáng / Chiều / Tối, lên lịch trực theo tuần, sao chép tuần trước
 - Bảng chấm công tổng và theo nhân viên; duyệt nghỉ phép
 - Quét bản đồ khu vực lần đầu (đi một vòng) làm bản đồ nền
-- Tạo / hủy lịch tuần tra, cấp phát và thu hồi thiết bị
+- Thêm địa điểm tuần tra mới (chọn trên bản đồ hoặc GPS), tạo mã QR mới, chia sẻ / in ảnh mã QR
+- Phân ca trực kèm lộ trình và thiết bị; bảo vệ vào ca thì tự tạo ca tuần tra, cấp và thu hồi thiết bị
 - Quản lý nhân sự (kèm PIN đăng nhập), đánh dấu và xóa nhân viên đã nghỉ việc; quản lý thiết bị
 
-Dữ liệu được lưu cục bộ trên thiết bị và giữ nguyên khi mở lại ứng dụng.
+Dữ liệu được lưu cục bộ trên thiết bị (vẫn dùng được khi mất mạng) và đồng bộ thời gian thực giữa các máy qua Cloud Firestore khi đã cấu hình Firebase.
 
 ## Công nghệ
 
@@ -35,12 +36,14 @@ Dữ liệu được lưu cục bộ trên thiết bị và giữ nguyên khi m�
 | Framework | Flutter 3 / Dart 3 |
 | State management | flutter_riverpod |
 | Lưu trữ cục bộ | shared_preferences |
+| Đồng bộ dữ liệu | firebase_core, cloud_firestore |
+| Chia sẻ ảnh mã QR | share_plus |
 | Định vị | geolocator |
 | Quét QR / sinh QR | mobile_scanner, qr_flutter |
 | Camera / ảnh | image_picker, permission_handler |
 | Ghi âm / phát âm thanh | record, audioplayers, path_provider |
 | Sinh trắc học | local_auth |
-| Bản đồ | flutter_map, latlong2 (nền OpenStreetMap, cần Internet) |
+| Bản đồ | flutter_map, latlong2 (vẽ điểm, lộ trình, đường đã quét; không dùng bản đồ nền trực tuyến) |
 
 ## Cấu trúc thư mục
 
@@ -52,10 +55,24 @@ lib/
 │   ├── datasources/       # LocalStore (SharedPreferences)
 │   └── models/            # Chuyển đổi Entity <-> JSON
 └── presentation/
-    ├── features/          # auth, dashboard, incident, management, patrol
+    ├── features/          # auth, dashboard, attendance, leave, incident, management, patrol
     ├── state/             # Riverpod providers & notifiers
-    └── widgets/           # Bản đồ thật (flutter_map), radar, cảnh báo cháy, slide-to-act
+    └── widgets/           # Bản đồ (flutter_map), radar, cảnh báo cháy, slide-to-act
 ```
+
+## Sơ đồ dữ liệu (ERD)
+
+Sơ đồ thực thể nằm trong `docs/ERD.drawio` (mở bằng [diagrams.net](https://app.diagrams.net)). Mỗi bảng trong ERD là một collection trên Firestore và một khóa trong bộ nhớ cục bộ.
+
+## Cấu hình Firebase
+
+File cấu hình Firebase không được đưa lên Git. Để bật đồng bộ:
+
+1. Tạo project trên [Firebase Console](https://console.firebase.google.com), thêm ứng dụng Android với package name trong `android/app/build.gradle.kts`.
+2. Tải `google-services.json` đặt vào `android/app/`.
+3. Bật Cloud Firestore và đặt Security Rules phù hợp.
+
+Nếu chưa cấu hình Firebase, ứng dụng vẫn chạy và chỉ lưu dữ liệu cục bộ (bản Android cần có file `google-services.json` mới build được).
 
 ## Chạy ứng dụng
 
@@ -75,7 +92,7 @@ Tài khoản mẫu:
 
 ## Mã QR điểm tuần tra
 
-Tuyến mẫu "Tuyến Trung tâm 59" đặt tại 59 Phạm Thị Lòng, xã Bình Mỹ, TP.HCM (10.98919, 106.57981), gồm 3 điểm. Mã in sẵn nằm trong `docs/qr/` (`in_A4_3_ma_QR.pdf` để in cả 3 mã trên một trang A4):
+Dữ liệu mẫu có lộ trình "Tuyến tuần tra mẫu" gồm 3 điểm. Mã in sẵn nằm trong `docs/qr/` (`in_A4_3_ma_QR.pdf` để in cả 3 mã trên một trang A4):
 
 | Điểm | Nội dung mã QR |
 |---|---|

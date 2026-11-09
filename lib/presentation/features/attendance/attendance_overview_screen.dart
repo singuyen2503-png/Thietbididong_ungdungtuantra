@@ -4,6 +4,7 @@ import '../../state/manager_state.dart';
 import '../../state/workforce_state.dart';
 import '../../widgets/month_switcher.dart';
 import 'personal_attendance_screen.dart';
+import '../../../core/theme/app_theme.dart';
 
 class AttendanceOverviewScreen extends ConsumerStatefulWidget {
   const AttendanceOverviewScreen({super.key});
@@ -15,7 +16,7 @@ class AttendanceOverviewScreen extends ConsumerStatefulWidget {
 
 class _AttendanceOverviewScreenState
     extends ConsumerState<AttendanceOverviewScreen> {
-  static const _accent = Color(0xFF38BDF8);
+  static const _accent = AppColors.info;
   late DateTime _month;
 
   @override
@@ -50,9 +51,9 @@ class _AttendanceOverviewScreenState
     final totalLate = rows.fold(0, (s, r) => s + r.summary.lateCount);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0E17),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF151E2E),
+        backgroundColor: AppColors.surface,
         iconTheme: const IconThemeData(color: _accent),
         title: const Text('BẢNG CHẤM CÔNG',
             style: TextStyle(color: _accent, fontWeight: FontWeight.bold)),
@@ -67,7 +68,7 @@ class _AttendanceOverviewScreenState
             StatTile(
                 label: 'Tổng ca',
                 value: '$totalShifts',
-                color: const Color(0xFF00FF9D)),
+                color: AppColors.primary),
             StatTile(
                 label: 'Tổng giờ công',
                 value: totalHours.toStringAsFixed(1),
@@ -93,7 +94,7 @@ class _AttendanceOverviewScreenState
             ),
           for (final r in rows)
             Card(
-              color: const Color(0xFF151E2E),
+              color: AppColors.surface,
               margin: const EdgeInsets.only(bottom: 8),
               child: ListTile(
                 leading: CircleAvatar(

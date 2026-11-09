@@ -5,6 +5,7 @@ import '../../../domain/entities/models.dart';
 import '../../state/manager_state.dart';
 import '../../widgets/incident_audio.dart';
 import '../../widgets/incident_photo.dart';
+import '../../../core/theme/app_theme.dart';
 
 class GuardIncidentDetailScreen extends ConsumerStatefulWidget {
   final Incident incident;
@@ -32,7 +33,7 @@ class _GuardIncidentDetailScreenState
         .firstWhere((i) => i.id == widget.incident.id);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0E17),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         title: const Text('CHI TIẾT NHIỆM VỤ',
@@ -47,7 +48,7 @@ class _GuardIncidentDetailScreenState
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                  color: const Color(0xFF151E2E),
+                  color: AppColors.surface,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
                       color: updatedIncident.isResolved
@@ -104,7 +105,7 @@ class _GuardIncidentDetailScreenState
                     hintStyle: TextStyle(color: Colors.grey),
                     border: OutlineInputBorder(),
                     filled: true,
-                    fillColor: Color(0xFF151E2E)),
+                    fillColor: AppColors.surface),
               ),
               const SizedBox(height: 24),
               SizedBox(

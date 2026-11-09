@@ -181,7 +181,9 @@ void main() {
           imageBase64: 'AAAA',
           severity: IncidentSeverity.critical));
       first.read(routeConfigsProvider.notifier).deleteRoute('r1');
-      first.read(schedulesProvider.notifier).deleteSchedule('s2');
+      first
+          .read(schedulesProvider.notifier)
+          .deleteSchedule('r${DateTime.now().weekday - 1}-p3');
       first.dispose();
       await Future<void>.delayed(Duration.zero);
 
@@ -193,7 +195,8 @@ void main() {
       expect(saved.imageBase64, 'AAAA');
       expect(saved.createdAt, DateTime(2026, 11, 1, 9, 5));
       expect(second.read(routeConfigsProvider), isEmpty);
-      expect(second.read(schedulesProvider).map((s) => s.id), ['s1']);
+      expect(second.read(schedulesProvider).map((s) => s.id),
+          ['r${DateTime.now().weekday - 1}-p1']);
       expect(
           second
               .read(schedulesProvider)
@@ -202,7 +205,7 @@ void main() {
               .first
               .location
               .latitude,
-          10.989686);
+          10.777394);
       second.dispose();
     });
 

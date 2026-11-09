@@ -170,13 +170,17 @@ Json rosterToJson(RosterEntry r) => {
       'personnelId': r.personnelId,
       'date': r.date.toIso8601String(),
       'shift': r.shift.name,
+      'routeId': r.routeId,
+      'equipmentIds': r.equipmentIds,
     };
 
 RosterEntry rosterFromJson(Json j) => RosterEntry(
     id: j['id'],
     personnelId: j['personnelId'],
     date: DateTime.parse(j['date']),
-    shift: ShiftType.values.byName(j['shift']));
+    shift: ShiftType.values.byName(j['shift']),
+    routeId: j['routeId'],
+    equipmentIds: List<String>.from(j['equipmentIds'] ?? const []));
 
 Json attendanceToJson(AttendanceRecord a) => {
       'id': a.id,

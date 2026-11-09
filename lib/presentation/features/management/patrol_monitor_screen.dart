@@ -4,6 +4,8 @@ import '../../../domain/entities/models.dart';
 import '../../state/manager_state.dart';
 import '../../state/workforce_state.dart';
 import '../../widgets/tactical_map.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/utils/date_utils.dart';
 
 class PatrolMonitorScreen extends ConsumerStatefulWidget {
   const PatrolMonitorScreen({super.key});
@@ -14,7 +16,7 @@ class PatrolMonitorScreen extends ConsumerStatefulWidget {
 }
 
 class _PatrolMonitorScreenState extends ConsumerState<PatrolMonitorScreen> {
-  static const _accent = Color(0xFF00FF9D);
+  static const _accent = AppColors.primary;
   String? _selectedId;
 
   @override
@@ -27,7 +29,7 @@ class _PatrolMonitorScreenState extends ConsumerState<PatrolMonitorScreen> {
         active.firstOrNull;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0E17),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         iconTheme: const IconThemeData(color: _accent),
@@ -49,7 +51,7 @@ class _PatrolMonitorScreenState extends ConsumerState<PatrolMonitorScreen> {
                   height: 260,
                   margin: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                      color: const Color(0xFF05080D),
+                      color: AppColors.mapCanvas,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
                           color: Colors.blueAccent.withValues(alpha: 0.5))),
@@ -101,12 +103,12 @@ class _ScheduleCard extends StatelessWidget {
         .fold<DateTime?>(null, (a, b) => a == null || b.isAfter(a) ? b : a);
 
     return Card(
-      color: const Color(0xFF151E2E),
+      color: AppColors.surface,
       margin: const EdgeInsets.only(bottom: 12),
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
           side: BorderSide(
-              color: selected ? const Color(0xFF00FF9D) : Colors.white12,
+              color: selected ? AppColors.primary : Colors.white12,
               width: selected ? 2 : 1)),
       child: InkWell(
         onTap: onTap,
@@ -118,7 +120,7 @@ class _ScheduleCard extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  const Icon(Icons.security, color: Color(0xFF00FF9D)),
+                  const Icon(Icons.security, color: AppColors.primary),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(schedule.guardName,
@@ -141,13 +143,13 @@ class _ScheduleCard extends StatelessWidget {
                   value: total == 0 ? 0 : scanned.length / total,
                   minHeight: 8,
                   backgroundColor: Colors.white12,
-                  color: const Color(0xFF00FF9D),
+                  color: AppColors.primary,
                 ),
               ),
               const SizedBox(height: 8),
               Text(
                   'Đã quét ${scanned.length}/$total điểm'
-                  '${lastScan == null ? '' : ' • Lần cuối ${formatTime(lastScan)}'}',
+                  '${lastScan == null ? '' : ' • Lần cuối ${formatHourMinute(lastScan)}'}',
                   style: const TextStyle(color: Colors.grey, fontSize: 13)),
               if (next != null)
                 Text('Điểm kế tiếp: ${next.name}',

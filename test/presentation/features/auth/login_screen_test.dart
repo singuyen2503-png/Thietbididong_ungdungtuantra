@@ -79,7 +79,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(GuardDashboardScreen), findsOneWidget);
-      expect(find.text('Tuyến: Tuyến Trung tâm 59'), findsOneWidget);
+      expect(find.text('Tuyến: Tuyến tuần tra mẫu'), findsOneWidget);
     });
 
     testWidgets('PIN 5678 vào Trung tâm Chỉ huy', (WidgetTester tester) async {

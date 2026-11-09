@@ -5,6 +5,7 @@ import '../../../domain/entities/workforce.dart';
 import '../../state/manager_state.dart';
 import '../../state/workforce_state.dart';
 import '../../widgets/month_switcher.dart';
+import '../../../core/theme/app_theme.dart';
 
 class PersonalAttendanceScreen extends ConsumerStatefulWidget {
   final String personnelId;
@@ -19,7 +20,7 @@ class PersonalAttendanceScreen extends ConsumerStatefulWidget {
 
 class _PersonalAttendanceScreenState
     extends ConsumerState<PersonalAttendanceScreen> {
-  static const _accent = Color(0xFF38BDF8);
+  static const _accent = AppColors.info;
   late DateTime _month;
 
   @override
@@ -55,9 +56,9 @@ class _PersonalAttendanceScreenState
       ..sort((a, b) => b.checkIn.compareTo(a.checkIn));
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0E17),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF151E2E),
+        backgroundColor: AppColors.surface,
         iconTheme: const IconThemeData(color: _accent),
         title: Text('CÔNG: ${person?.name ?? 'Nhân viên'}',
             style:
@@ -73,7 +74,7 @@ class _PersonalAttendanceScreenState
             StatTile(
                 label: 'Ca đã làm',
                 value: '${summary.shiftsWorked}',
-                color: const Color(0xFF00FF9D)),
+                color: AppColors.primary),
             StatTile(
                 label: 'Tổng giờ',
                 value: summary.hours.toStringAsFixed(1),
@@ -128,11 +129,11 @@ class _RecordTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final a = record;
     return Card(
-      color: const Color(0xFF151E2E),
+      color: AppColors.surface,
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
         leading: Icon(a.isComplete ? Icons.check_circle : Icons.timelapse,
-            color: a.isComplete ? const Color(0xFF00FF9D) : Colors.orange),
+            color: a.isComplete ? AppColors.primary : Colors.orange),
         title: Text(
             '${weekdayShort(a.date)} ${formatDate(a.date)} • ${a.shift.label}',
             style: const TextStyle(

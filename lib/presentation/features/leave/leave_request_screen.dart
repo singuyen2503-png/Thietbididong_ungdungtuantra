@@ -5,13 +5,14 @@ import '../../../core/utils/date_utils.dart';
 import '../../../domain/entities/workforce.dart';
 import '../../state/manager_state.dart';
 import '../../state/workforce_state.dart';
+import '../../../core/theme/app_theme.dart';
 
 Color leaveStatusColor(LeaveStatus s) {
   switch (s) {
     case LeaveStatus.pending:
       return Colors.orangeAccent;
     case LeaveStatus.approved:
-      return const Color(0xFF00FF9D);
+      return AppColors.primary;
     case LeaveStatus.rejected:
       return Colors.redAccent;
   }
@@ -93,9 +94,9 @@ class _LeaveRequestScreenState extends ConsumerState<LeaveRequestScreen> {
     final days = _to.difference(_from).inDays + 1;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0E17),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF151E2E),
+        backgroundColor: AppColors.surface,
         iconTheme: const IconThemeData(color: _accent),
         title: const Text('XIN NGHỈ PHÉP',
             style: TextStyle(color: _accent, fontWeight: FontWeight.bold)),
@@ -122,7 +123,7 @@ class _LeaveRequestScreenState extends ConsumerState<LeaveRequestScreen> {
                 hintText: 'Lý do xin nghỉ...',
                 hintStyle: TextStyle(color: Colors.white38),
                 filled: true,
-                fillColor: Color(0xFF151E2E),
+                fillColor: AppColors.surface,
                 border: OutlineInputBorder(borderSide: BorderSide.none)),
           ),
           const SizedBox(height: 12),
@@ -165,8 +166,7 @@ class _LeaveRequestScreenState extends ConsumerState<LeaveRequestScreen> {
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-            color: const Color(0xFF151E2E),
-            borderRadius: BorderRadius.circular(8)),
+            color: AppColors.surface, borderRadius: BorderRadius.circular(8)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -204,7 +204,7 @@ class LeaveTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final color = leaveStatusColor(leave.status);
     return Card(
-      color: const Color(0xFF151E2E),
+      color: AppColors.surface,
       margin: const EdgeInsets.only(bottom: 10),
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),

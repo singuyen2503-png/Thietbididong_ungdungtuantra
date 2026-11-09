@@ -4,18 +4,19 @@ import '../patrol/patrol_active_screen.dart';
 import '../../state/manager_state.dart';
 import '../../state/workforce_state.dart';
 import '../../widgets/tactical_map.dart';
+import '../../../core/theme/app_theme.dart';
 
 class ShiftDetailScreen extends ConsumerWidget {
   const ShiftDetailScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    const primaryColor = Color(0xFF00FF9D);
+    const primaryColor = AppColors.primary;
     final schedule = ref.watch(currentGuardScheduleProvider);
     final equipments = ref.watch(equipmentProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0E17),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -46,7 +47,7 @@ class ShiftDetailScreen extends ConsumerWidget {
                     width: double.infinity,
                     height: 260,
                     decoration: BoxDecoration(
-                        color: const Color(0xFF05080D),
+                        color: AppColors.mapCanvas,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: Colors.white12)),
                     child: ClipRRect(
@@ -63,7 +64,7 @@ class ShiftDetailScreen extends ConsumerWidget {
                     width: double.infinity,
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                        color: const Color(0xFF151E2E),
+                        color: AppColors.surface,
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
                             color: primaryColor.withValues(alpha: 0.3))),

@@ -23,8 +23,6 @@ plugins {
     id("org.jetbrains.kotlin.android") version "2.4.0" apply false
 }
 
-// Bypassing "different roots" path error on Windows.
-// Force all subprojects' build output to a common location.
 gradle.beforeProject {
     if (this != rootProject && this.name != "app") {
         this.layout.buildDirectory.set(rootProject.layout.buildDirectory.dir("plugins/${this.name}"))

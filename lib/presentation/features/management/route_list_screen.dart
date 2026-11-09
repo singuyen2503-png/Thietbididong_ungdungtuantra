@@ -6,7 +6,10 @@ import '../../../domain/entities/models.dart';
 import '../../state/manager_state.dart';
 import '../../state/workforce_state.dart';
 import '../../widgets/tactical_map.dart';
+import 'checkpoints_screen.dart';
+import 'qr_code_screen.dart';
 import 'route_drawing_screen.dart';
+import '../../../core/theme/app_theme.dart';
 
 class RouteListScreen extends ConsumerWidget {
   const RouteListScreen({super.key});
@@ -17,9 +20,9 @@ class RouteListScreen extends ConsumerWidget {
     final schedules = ref.watch(schedulesProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0E17),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF151E2E),
+        backgroundColor: AppColors.surface,
         title: const Text('LỘ TRÌNH TUẦN TRA',
             style: TextStyle(
                 color: Colors.purpleAccent, fontWeight: FontWeight.bold)),
@@ -82,7 +85,7 @@ class RouteListScreen extends ConsumerWidget {
                         .deleteRoute(route.id);
                   },
                   child: Card(
-                    color: const Color(0xFF151E2E),
+                    color: AppColors.surface,
                     margin: const EdgeInsets.only(bottom: 12),
                     child: ListTile(
                       leading: const Icon(Icons.route,
@@ -124,6 +127,11 @@ class RouteDetailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final route = ref
+            .watch(routeConfigsProvider)
+            .where((r) => r.id == this.route.id)
+            .firstOrNull ??
+        this.route;
     final checkpoints = route.checkpoints
         .map((c) => Checkpoint(
             id: c.id,
@@ -134,9 +142,9 @@ class RouteDetailScreen extends ConsumerWidget {
         .toList();
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0E17),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF151E2E),
+        backgroundColor: AppColors.surface,
         title: Text(route.name,
             style: const TextStyle(
                 color: Colors.purpleAccent, fontWeight: FontWeight.bold)),
@@ -148,7 +156,7 @@ class RouteDetailScreen extends ConsumerWidget {
           Container(
             height: 260,
             decoration: BoxDecoration(
-                color: const Color(0xFF05080D),
+                color: AppColors.mapCanvas,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: Colors.white12)),
             child: ClipRRect(
@@ -160,57 +168,74 @@ class RouteDetailScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 16),
-          const Text('MÃ QR TẠI CÁC ĐIỂM (in và dán đúng vị trí)',
+          const Text('MÃ QR TẠI CÁC ĐIỂM (chạm để phóng to, in hoặc sửa)',
               style:
                   TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
           const SizedBox(height: 12),
           ...route.checkpoints.asMap().entries.map((e) {
             final cp = e.value;
             return Card(
-              color: const Color(0xFF151E2E),
+              color: AppColors.surface,
               margin: const EdgeInsets.only(bottom: 12),
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Row(
-                  children: [
-                    Container(
-                      color: Colors.white,
-                      padding: const EdgeInsets.all(6),
-                      child: QrImageView(
-                          data: cp.expectedQrCode,
-                          size: 110,
-                          backgroundColor: Colors.white),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('${e.key + 1}. ${cp.name}',
-                              style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18)),
-                          const SizedBox(height: 6),
-                          Text('Mã: ${cp.expectedQrCode}',
-                              style: const TextStyle(color: Colors.white70)),
-                          Text(
-                              'GPS: ${cp.location.latitude.toStringAsFixed(5)}, ${cp.location.longitude.toStringAsFixed(5)}',
-                              style: const TextStyle(
-                                  color: Colors.white54, fontSize: 12)),
-                          Text(
-                              'Bán kính: ${cp.radiusMeters.toStringAsFixed(0)} m',
-                              style: const TextStyle(
-                                  color: Colors.white54, fontSize: 12)),
-                        ],
+              clipBehavior: Clip.antiAlias,
+              child: InkWell(
+                onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => QrCodeScreen(
+                            routeId: route.id, checkpointId: cp.id))),
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Row(
+                    children: [
+                      Container(
+                        color: Colors.white,
+                        padding: const EdgeInsets.all(6),
+                        child: QrImageView(
+                            data: cp.expectedQrCode,
+                            size: 110,
+                            backgroundColor: Colors.white),
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('${e.key + 1}. ${cp.name}',
+                                style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18)),
+                            const SizedBox(height: 6),
+                            Text('Mã: ${cp.expectedQrCode}',
+                                style: const TextStyle(color: Colors.white70)),
+                            Text(
+                                'GPS: ${cp.location.latitude.toStringAsFixed(5)}, ${cp.location.longitude.toStringAsFixed(5)}',
+                                style: const TextStyle(
+                                    color: Colors.white54, fontSize: 12)),
+                            Text(
+                                'Bán kính: ${cp.radiusMeters.toStringAsFixed(0)} m',
+                                style: const TextStyle(
+                                    color: Colors.white54, fontSize: 12)),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             );
           }),
+          const SizedBox(height: 72),
         ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        backgroundColor: Colors.purpleAccent,
+        foregroundColor: Colors.black,
+        icon: const Icon(Icons.add_location_alt),
+        label: const Text('THÊM ĐỊA ĐIỂM',
+            style: TextStyle(fontWeight: FontWeight.bold)),
+        onPressed: () => openAddCheckpoint(context, ref, routeId: route.id),
       ),
     );
   }

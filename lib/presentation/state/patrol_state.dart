@@ -9,8 +9,8 @@ final currentGuardLocationProvider =
   const bool useMockGps = !bool.fromEnvironment('USE_REAL_GPS');
 
   if (useMockGps) {
-    double currentLat = 10.989120;
-    double currentLng = 106.578710;
+    double currentLat = 10.776828;
+    double currentLng = 106.699801;
 
     LatLng? activeTarget;
 

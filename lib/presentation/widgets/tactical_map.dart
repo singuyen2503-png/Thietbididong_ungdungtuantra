@@ -1,16 +1,11 @@
-import 'dart:io' show Platform;
-
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart' as ll;
+import '../../core/theme/app_theme.dart';
 import '../../core/utils/lat_lng.dart';
 import '../../domain/entities/models.dart';
 
-const defaultMapCenter = LatLng(10.9891919, 106.5798086);
-
-final bool _isTest =
-    !kIsWeb && Platform.environment.containsKey('FLUTTER_TEST');
+const defaultMapCenter = LatLng(10.776900, 106.700900);
 
 ll.LatLng _ll(LatLng p) => ll.LatLng(p.latitude, p.longitude);
 
@@ -54,7 +49,7 @@ class TacticalMap extends StatelessWidget {
         initialZoom: 17,
         minZoom: 4,
         maxZoom: 19,
-        backgroundColor: const Color(0xFFE5E3DF),
+        backgroundColor: AppColors.mapBackground,
         initialCameraFit: fit
             ? CameraFit.coordinates(
                 coordinates: points,
@@ -66,33 +61,25 @@ class TacticalMap extends StatelessWidget {
             : (_, point) => onTap!(LatLng(point.latitude, point.longitude)),
       ),
       children: [
-        if (!_isTest)
-          TileLayer(
-            urlTemplate:
-                'https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png',
-            fallbackUrl: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-            subdomains: const ['a', 'b', 'c'],
-            userAgentPackageName: 'com.example.demo_app',
-            maxZoom: 19,
-          ),
+        const _GridLayer(),
         PolylineLayer(polylines: [
           for (final t in siteTracks)
             if (t.length > 1)
               Polyline(
                   points: t.map(_ll).toList(),
                   strokeWidth: 7,
-                  color: const Color(0xFF0EA5E9).withValues(alpha: 0.6)),
+                  color: AppColors.info.withValues(alpha: 0.7)),
           if (plannedPath.length > 1)
             Polyline(
                 points: plannedPath.map(_ll).toList(),
                 strokeWidth: 4,
-                color: const Color(0xFF1E3A8A),
+                color: Colors.white70,
                 pattern: StrokePattern.dashed(segments: const [12, 8])),
           if (actualPath.length > 1)
             Polyline(
                 points: actualPath.map(_ll).toList(),
                 strokeWidth: 5,
-                color: const Color(0xFF00A86B)),
+                color: AppColors.primary),
         ]),
         CircleLayer(circles: [
           for (final c in checkpoints)
@@ -100,11 +87,10 @@ class TacticalMap extends StatelessWidget {
                 point: _ll(c.location),
                 radius: c.radiusMeters,
                 useRadiusInMeter: true,
-                color:
-                    (c.isScanned ? const Color(0xFF00A86B) : Colors.deepOrange)
-                        .withValues(alpha: 0.2),
+                color: (c.isScanned ? AppColors.primary : AppColors.warning)
+                    .withValues(alpha: 0.18),
                 borderColor:
-                    c.isScanned ? const Color(0xFF00A86B) : Colors.deepOrange,
+                    c.isScanned ? AppColors.primary : AppColors.warning,
                 borderStrokeWidth: 1.5),
         ]),
         MarkerLayer(markers: [
@@ -123,26 +109,16 @@ class TacticalMap extends StatelessWidget {
               height: 26,
               child: Container(
                 decoration: BoxDecoration(
-                  color: const Color(0xFF2563EB),
+                  color: AppColors.info,
                   shape: BoxShape.circle,
                   border: Border.all(color: Colors.white, width: 3),
                   boxShadow: const [
-                    BoxShadow(color: Color(0xFF2563EB), blurRadius: 12)
+                    BoxShadow(color: AppColors.info, blurRadius: 14)
                   ],
                 ),
               ),
             ),
         ]),
-        Align(
-          alignment: Alignment.bottomRight,
-          child: Container(
-            margin: const EdgeInsets.all(4),
-            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
-            color: Colors.white70,
-            child: const Text('© OpenStreetMap contributors',
-                style: TextStyle(fontSize: 9, color: Colors.black87)),
-          ),
-        ),
       ],
     );
   }
@@ -155,7 +131,7 @@ class _CheckpointPin extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = scanned ? const Color(0xFF00A86B) : Colors.deepOrange;
+    final color = scanned ? AppColors.primary : AppColors.warning;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -164,7 +140,8 @@ class _CheckpointPin extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
           decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.9),
+              color: AppColors.background.withValues(alpha: 0.85),
+              border: Border.all(color: color.withValues(alpha: 0.6)),
               borderRadius: BorderRadius.circular(4)),
           child: Text(name,
               maxLines: 1,
@@ -175,4 +152,38 @@ class _CheckpointPin extends StatelessWidget {
       ],
     );
   }
+}
+
+class _GridLayer extends StatelessWidget {
+  const _GridLayer();
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+        size: Size.infinite,
+        painter: _GridPainter(MapCamera.of(context).pixelOrigin));
+  }
+}
+
+class _GridPainter extends CustomPainter {
+  final Offset origin;
+  const _GridPainter(this.origin);
+
+  static const _step = 48.0;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = AppColors.mapGrid
+      ..strokeWidth = 1;
+    for (var x = -(origin.dx % _step); x < size.width; x += _step) {
+      canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
+    }
+    for (var y = -(origin.dy % _step); y < size.height; y += _step) {
+      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(_GridPainter old) => old.origin != origin;
 }

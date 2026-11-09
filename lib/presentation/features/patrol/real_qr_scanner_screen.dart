@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'dart:async';
 
 import '../../../core/utils/qr_utils.dart';
+import '../../../core/theme/app_theme.dart';
 
 class RealQrScannerScreen extends StatefulWidget {
   final String expectedQr;
@@ -109,12 +110,11 @@ class _RealQrScannerScreenState extends State<RealQrScannerScreen> {
                   height: 250,
                   width: 250,
                   decoration: BoxDecoration(
-                      border:
-                          Border.all(color: const Color(0xFF00FF9D), width: 3),
+                      border: Border.all(color: AppColors.primary, width: 3),
                       borderRadius: BorderRadius.circular(20)),
                   child: const Align(
                     alignment: Alignment.center,
-                    child: Icon(Icons.add, color: Color(0xFF00FF9D), size: 40),
+                    child: Icon(Icons.add, color: AppColors.primary, size: 40),
                   ),
                 ),
               ),
@@ -150,7 +150,7 @@ class _RealQrScannerScreenState extends State<RealQrScannerScreen> {
                   padding: const EdgeInsets.only(bottom: 40),
                   child: Text('Đang quét: ${widget.expectedQr}',
                       style: const TextStyle(
-                          color: Color(0xFF00FF9D),
+                          color: AppColors.primary,
                           fontSize: 16,
                           fontFamily: 'Roboto',
                           fontWeight: FontWeight.bold,

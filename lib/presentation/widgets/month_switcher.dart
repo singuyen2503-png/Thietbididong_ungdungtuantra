@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/theme/app_theme.dart';
 
 class MonthSwitcher extends StatelessWidget {
   final DateTime month;
@@ -46,7 +47,7 @@ class StatTile extends StatelessWidget {
         margin: const EdgeInsets.symmetric(horizontal: 4),
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-            color: const Color(0xFF151E2E),
+            color: AppColors.surface,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: color.withValues(alpha: 0.4))),
         child: Column(

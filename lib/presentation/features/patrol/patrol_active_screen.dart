@@ -10,6 +10,7 @@ import '../../widgets/tactical_radar_widget.dart';
 import '../../../core/utils/geo_utils.dart';
 import 'mock_qr_scanner_screen.dart';
 import 'real_qr_scanner_screen.dart';
+import '../../../core/theme/app_theme.dart';
 
 class PatrolActiveScreen extends ConsumerWidget {
   const PatrolActiveScreen({super.key});
@@ -21,7 +22,7 @@ class PatrolActiveScreen extends ConsumerWidget {
     final schedule = ref.watch(currentGuardScheduleProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0E17),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         title: Text(
@@ -30,12 +31,12 @@ class PatrolActiveScreen extends ConsumerWidget {
                 fontFamily: 'Roboto',
                 fontWeight: FontWeight.bold,
                 letterSpacing: 2,
-                color: Color(0xFF00FF9D))),
-        iconTheme: const IconThemeData(color: Color(0xFF00FF9D)),
+                color: AppColors.primary)),
+        iconTheme: const IconThemeData(color: AppColors.primary),
       ),
       body: checkpointsAsync.when(
           loading: () => const Center(
-              child: CircularProgressIndicator(color: Color(0xFF00FF9D))),
+              child: CircularProgressIndicator(color: AppColors.primary)),
           error: (e, s) => Center(
               child: Text('Lỗi hệ thống: $e',
                   style: const TextStyle(color: Colors.red))),
@@ -76,7 +77,7 @@ class PatrolActiveScreen extends ConsumerWidget {
                     scannedCount == checkpoints.length)
                   _buildBanner(
                       'HOÀN THÀNH TUẦN TRA: $scannedCount/${checkpoints.length} ĐIỂM',
-                      const Color(0xFF00FF9D)),
+                      AppColors.primary),
                 Expanded(
                   child: ListView.builder(
                     padding: const EdgeInsets.all(16),
@@ -123,11 +124,11 @@ class PatrolActiveScreen extends ConsumerWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: const Color(0xFF151E2E),
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
             color: isDone
-                ? const Color(0xFF00FF9D)
+                ? AppColors.primary
                 : (isInRange ? Colors.blueAccent : Colors.white12),
             width: 2),
       ),
@@ -143,7 +144,7 @@ class PatrolActiveScreen extends ConsumerWidget {
                         ? Icons.gps_fixed
                         : (isInRange ? Icons.radar : Icons.gps_off),
                     color: isDone
-                        ? const Color(0xFF00FF9D)
+                        ? AppColors.primary
                         : (isInRange ? Colors.blueAccent : Colors.grey),
                     size: 28),
                 const SizedBox(width: 16),
@@ -173,7 +174,7 @@ class PatrolActiveScreen extends ConsumerWidget {
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
                               color: isInRange
-                                  ? const Color(0xFF00FF9D)
+                                  ? AppColors.primary
                                   : Colors.redAccent),
                         ),
                     ],
@@ -247,9 +248,8 @@ class PatrolActiveScreen extends ConsumerWidget {
                           color: isInRange ? Colors.black : Colors.white70,
                           letterSpacing: 1)),
                   style: ElevatedButton.styleFrom(
-                      backgroundColor: isInRange
-                          ? const Color(0xFF00FF9D)
-                          : Colors.grey.shade800,
+                      backgroundColor:
+                          isInRange ? AppColors.primary : Colors.grey.shade800,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8))),
                 ),

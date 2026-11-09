@@ -5,6 +5,7 @@ import '../../state/manager_state.dart';
 import '../../state/workforce_state.dart';
 import '../../../domain/entities/models.dart';
 import 'personnel_detail_screen.dart';
+import '../../../core/theme/app_theme.dart';
 
 class PersonnelScreen extends ConsumerWidget {
   const PersonnelScreen({super.key});
@@ -27,7 +28,7 @@ class PersonnelScreen extends ConsumerWidget {
       builder: (ctx) => StatefulBuilder(
         builder: (context, setState) {
           return AlertDialog(
-            backgroundColor: const Color(0xFF151E2E),
+            backgroundColor: AppColors.surface,
             title: Text(isEdit ? 'CẬP NHẬT NHÂN SỰ' : 'THÊM NHÂN SỰ MỚI',
                 style: const TextStyle(
                     fontWeight: FontWeight.bold, color: Colors.blueAccent)),
@@ -71,7 +72,7 @@ class PersonnelScreen extends ConsumerWidget {
                       const SizedBox(width: 16),
                       Expanded(
                         child: DropdownButtonFormField<String>(
-                          dropdownColor: const Color(0xFF151E2E),
+                          dropdownColor: AppColors.surface,
                           initialValue: gender,
                           style: const TextStyle(color: Colors.white),
                           decoration: const InputDecoration(
@@ -177,7 +178,7 @@ class PersonnelScreen extends ConsumerWidget {
                   Navigator.pop(context);
                 },
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF1E3A8A)),
+                    backgroundColor: AppColors.personnelAction),
                 child: const Text('LƯU', style: TextStyle(color: Colors.white)),
               ),
             ],
@@ -247,7 +248,7 @@ class PersonnelScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1E3A8A),
+        backgroundColor: AppColors.personnelAction,
         title: const Text('QUẢN LÝ NHÂN SỰ',
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         actions: [
@@ -352,7 +353,7 @@ class PersonnelScreen extends ConsumerWidget {
             ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showFormDialog(context, ref),
-        backgroundColor: const Color(0xFF1E3A8A),
+        backgroundColor: AppColors.personnelAction,
         child: const Icon(Icons.add, color: Colors.white),
       ),
     );

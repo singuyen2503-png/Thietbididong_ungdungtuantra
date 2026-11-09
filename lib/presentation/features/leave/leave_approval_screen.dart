@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../domain/entities/workforce.dart';
 import '../../state/workforce_state.dart';
 import 'leave_request_screen.dart';
+import '../../../core/theme/app_theme.dart';
 
 class LeaveApprovalScreen extends ConsumerWidget {
   const LeaveApprovalScreen({super.key});
@@ -75,9 +76,9 @@ class LeaveApprovalScreen extends ConsumerWidget {
     final done = leaves.where((l) => l.status != LeaveStatus.pending).toList();
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0E17),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF151E2E),
+        backgroundColor: AppColors.surface,
         iconTheme: const IconThemeData(color: Colors.pinkAccent),
         title: const Text('DUYỆT NGHỈ PHÉP',
             style: TextStyle(

@@ -5,7 +5,7 @@ import 'package:demo_app/presentation/state/manager_state.dart';
 import 'package:demo_app/presentation/widgets/tactical_map.dart';
 
 void main() {
-  testWidgets('Bản đồ thật hiển thị điểm tuần tra và trả tọa độ khi chạm',
+  testWidgets('Bản đồ hiển thị điểm tuần tra và trả tọa độ khi chạm',
       (tester) async {
     LatLng? tapped;
     await tester.pumpWidget(MaterialApp(
@@ -25,12 +25,11 @@ void main() {
 
     expect(find.text('Nhà Kho'), findsOneWidget);
     expect(find.text('Hành Lang'), findsOneWidget);
-    expect(find.text('© OpenStreetMap contributors'), findsOneWidget);
 
     await tester.tapAt(const Offset(200, 200));
     await tester.pump(const Duration(milliseconds: 400));
     expect(tapped, isNotNull);
-    expect(tapped!.latitude, closeTo(10.9893, 0.002));
-    expect(tapped!.longitude, closeTo(106.5798, 0.002));
+    expect(tapped!.latitude, closeTo(10.7771, 0.002));
+    expect(tapped!.longitude, closeTo(106.7009, 0.002));
   });
 }

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import '../../core/theme/app_theme.dart';
 
 class IncidentAudio extends StatefulWidget {
   final String audioPath;
@@ -56,12 +57,12 @@ class _IncidentAudioState extends State<IncidentAudio> {
       margin: const EdgeInsets.only(bottom: 24),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       decoration: BoxDecoration(
-          color: const Color(0xFF151E2E),
+          color: AppColors.surface,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: Colors.white12)),
       child: Row(
         children: [
-          const Icon(Icons.graphic_eq, color: Color(0xFF00FF9D)),
+          const Icon(Icons.graphic_eq, color: AppColors.primary),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
@@ -72,7 +73,7 @@ class _IncidentAudioState extends State<IncidentAudio> {
           IconButton(
             tooltip: _isPlaying ? 'Dừng' : 'Nghe',
             icon: Icon(_isPlaying ? Icons.stop_circle : Icons.play_circle_fill,
-                color: const Color(0xFF00FF9D), size: 36),
+                color: AppColors.primary, size: 36),
             onPressed: _toggle,
           ),
           if (widget.onRemove != null)

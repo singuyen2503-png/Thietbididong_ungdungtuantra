@@ -13,6 +13,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../state/manager_state.dart';
 import '../../../domain/entities/models.dart';
 import '../../widgets/incident_audio.dart';
+import '../../../core/theme/app_theme.dart';
 
 class IncidentReportScreen extends ConsumerStatefulWidget {
   const IncidentReportScreen({super.key});
@@ -174,7 +175,7 @@ class _IncidentReportScreenState extends ConsumerState<IncidentReportScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0E17),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         title: const Text('BÁO CÁO SỰ CỐ',
@@ -204,7 +205,7 @@ class _IncidentReportScreenState extends ConsumerState<IncidentReportScreen> {
                   hintText: 'Tiêu đề ngắn gọn (VD: Đột nhập, Cháy)...',
                   hintStyle: TextStyle(color: Colors.white38),
                   filled: true,
-                  fillColor: Color(0xFF151E2E),
+                  fillColor: AppColors.surface,
                   border: OutlineInputBorder(borderSide: BorderSide.none)),
             ),
             const SizedBox(height: 12),
@@ -216,7 +217,7 @@ class _IncidentReportScreenState extends ConsumerState<IncidentReportScreen> {
                   hintText: 'Mô tả chi tiết...',
                   hintStyle: TextStyle(color: Colors.white38),
                   filled: true,
-                  fillColor: Color(0xFF151E2E),
+                  fillColor: AppColors.surface,
                   border: OutlineInputBorder(borderSide: BorderSide.none)),
             ),
             const SizedBox(height: 32),
@@ -384,7 +385,7 @@ class _IncidentReportScreenState extends ConsumerState<IncidentReportScreen> {
   }
 
   Widget _photoButton(IconData icon, String label, VoidCallback onPressed) {
-    final color = _photo != null ? const Color(0xFF00FF9D) : Colors.white70;
+    final color = _photo != null ? AppColors.primary : Colors.white70;
     return OutlinedButton.icon(
       onPressed: onPressed,
       icon: Icon(icon, color: color),
@@ -392,8 +393,7 @@ class _IncidentReportScreenState extends ConsumerState<IncidentReportScreen> {
       style: OutlinedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 16),
           side: BorderSide(
-              color:
-                  _photo != null ? const Color(0xFF00FF9D) : Colors.white12)),
+              color: _photo != null ? AppColors.primary : Colors.white12)),
     );
   }
 }

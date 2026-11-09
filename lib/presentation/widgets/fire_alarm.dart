@@ -2,6 +2,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/theme/app_theme.dart';
 import '../../core/utils/date_utils.dart';
 import '../../domain/entities/models.dart';
 import '../state/manager_state.dart';
@@ -23,7 +24,7 @@ class FireAlarmButton extends ConsumerWidget {
 
     final location = await showModalBottomSheet<String>(
       context: context,
-      backgroundColor: const Color(0xFF2A0D0D),
+      backgroundColor: AppColors.alarmBackground,
       builder: (ctx) => SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,

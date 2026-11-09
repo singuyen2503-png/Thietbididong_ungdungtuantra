@@ -17,6 +17,38 @@ void main() {
       c.read(rosterProvider.notifier).assign(id, day, shift,
           personnel: c.read(personnelProvider), leaves: c.read(leavesProvider));
 
+  group('Gộp lịch trực với ca tuần tra', () {
+    test('Ca mẫu hôm nay liên kết với ca tuần tra', () {
+      c.read(currentGuardIdProvider.notifier).state = 'p1';
+      final shift = c.read(currentShiftProvider);
+      expect(shift.entry, isNotNull);
+      expect(shift.schedule?.id, shift.entry!.id);
+      expect(shift.routeName, 'Tuyến tuần tra mẫu');
+    });
+
+    test('Gỡ ca chưa tuần tra thì xóa luôn ca tuần tra', () {
+      final p1 = c
+          .read(rosterProvider)
+          .firstWhere((e) => e.personnelId == 'p1' && sameDay(e.date, today));
+      final p3 = c
+          .read(rosterProvider)
+          .where((e) => e.personnelId == 'p3' && sameDay(e.date, today));
+      expect(
+          shiftStateOf(p1, c.read(attendanceProvider),
+              c.read(schedulesProvider), DateTime.now()),
+          isNot(ShiftState.patrolling));
+      final schedules = c.read(schedulesProvider);
+      final p3Schedule = schedules.where((s) => s.guardId == 'p3').first;
+      expect(p3Schedule.status, ScheduleStatus.inProgress);
+      if (p3.isNotEmpty) {
+        expect(
+            shiftStateOf(p3.first, c.read(attendanceProvider), schedules,
+                DateTime.now()),
+            ShiftState.patrolling);
+      }
+    });
+  });
+
   group('Phân ca & lịch trực tuần', () {
     test('Lịch mẫu có đủ 3 ca cho tuần hiện tại', () {
       final roster = c.read(rosterProvider);
