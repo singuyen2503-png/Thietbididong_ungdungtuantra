@@ -60,7 +60,18 @@ lib/
     └── widgets/           # Bản đồ (flutter_map), radar, cảnh báo cháy, slide-to-act
 ```
 
+## Tài liệu
+
+| Tài liệu | Đường dẫn |
+|---|---|
+| Báo cáo đồ án | [docs/BAO_CAO_DO_AN.md](docs/BAO_CAO_DO_AN.md) |
+| Sơ đồ ERD (ảnh / file gốc) | [docs/ERD.png](docs/ERD.png) · [docs/ERD.drawio](docs/ERD.drawio) |
+| Ảnh chụp màn hình | [docs/screenshots/](docs/screenshots) |
+| Mã QR in sẵn | [docs/qr/](docs/qr) |
+
 ## Sơ đồ dữ liệu (ERD)
+
+![Sơ đồ ERD](docs/ERD.png)
 
 Sơ đồ thực thể nằm trong `docs/ERD.drawio` (mở bằng [diagrams.net](https://app.diagrams.net)). Mỗi bảng trong ERD là một collection trên Firestore và một khóa trong bộ nhớ cục bộ.
 
